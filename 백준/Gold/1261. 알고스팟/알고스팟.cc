@@ -1,90 +1,80 @@
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#include <stdio.h>
-#include<iostream>
-#include <string>
-#include<deque>
-#include <memory.h>
-#include<vector>
-#include<set>
-#include<queue>
-#include <cassert>
-
-#include<algorithm>
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <algorithm>
+#define INF 987654321
 
 using namespace std;
-int arr[101][101];
+
 int n, m;
-int wall;
-int vis[101][101];
-struct info {
-	int x, y, w;
-};
-int dx[4] = { -1,1,0,0 };
-int dy[4] = { 0,0,-1,1 };
-int re = 987654321;
-struct cmp{
-	bool operator()(info a, info b) {
-		return a.w > b.w;
-	}
+int graph[100][100];
+int dir[4][2] = { {1,0},{0,1},{-1,0},{0,-1} };
+int dp[100][100];
 
-}; 
-void f() {
-	
-	priority_queue <info,vector<info>,cmp> q;
-	q.push({ 0,0,0 });
-	vis[0][0] = 1;
+void djikstra(int r, int c) {
 
-	while (!q.empty()) {
-		int x = q.top().x;
-		int y = q.top().y;
-		int w = q.top().w;
-		q.pop();
-	//	cout << x << ", " << y << "에 " << w << "개의 벽부수고 도착\n";
+    dp[r][c] = 0;        //first == count  second.first ==r second.second ==c
+    priority_queue<pair<int,pair<int, int>>, vector<pair<int,pair<int, int>>>, greater<pair<int,pair<int, int>>>> pq;
+    pq.push({ 0,{r,c} });
 
-		if (x == n - 1 && y == m - 1) {
-			re = min(re, w);
-		
-			continue;
-		}
-		for (int i = 0; i < 4; i++) {
-			int nx = x + dx[i];
-			int ny = y + dy[i];
-			if (nx < 0 || nx >= n || ny < 0 || ny >= m)
-				continue;
-			if (arr[nx][ny] == 1) {
-				if (vis[nx][ny] == 0) {
-					q.push({ nx,ny,w + 1 });
-					vis[nx][ny] =1;
-				}
-			
-			}
-			else {
-				if (vis[nx][ny] == 0) {
-					q.push({ nx,ny,w});
-					vis[nx][ny]=  1;
-				}
-				
-			}
-		
-		}
+    while (!pq.empty()) {
+        int count = pq.top().first;
+        int current_r = pq.top().second.first;
+        int current_c = pq.top().second.second;
+        pq.pop();
+       
+        for (int i = 0; i < 4; i++) {
+            int next_count;
+            int next_r = current_r + dir[i][0];
+            int next_c = current_c + dir[i][1];
 
-	}
+            if (next_r >= 0 && next_r < m && next_c >= 0 && next_c < n) {
+                if (graph[next_r][next_c] == 0) {
+
+                    next_count = dp[current_r][current_c];
+                }
+                else {
+                    next_count = dp[current_r][current_c] + 1;
+                }
+                if (dp[next_r][next_c] > next_count) {
+                    pq.push({ next_count,{next_r,next_c} });
+                    dp[next_r][next_c] = next_count;
+                }
+            }
+
+        }
+
+
+
+    }
+
 }
-int main() {
-	cin >> m >> n;
-	for (int i = 0; i < n; i++) {
-		string s;
-		cin >> s;
-		for (int j = 0; j < m; j++) {
-			arr[i][j] = s[j]-'0';
-			if (arr[i][j] == 1)
-				wall++;
-		}
-	}
 
-	f();
-	cout << re;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
+    cin >> n >> m;
+
+
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            char ch;
+            cin >> ch;
+            graph[i][j] = ch-'0';
+        }
+    }
+
+    for (int i = 0; i < 100; i++) {
+        for (int j = 0; j < 100; j++) {
+            dp[i][j] = INF;
+        }
+    }
+
+    djikstra(0, 0);
+
+    cout << dp[m - 1][n - 1];
+
+    return 0;
 }
