@@ -74,36 +74,12 @@ int main() {
 		x = con[qq.front()].first;
 		y = con[qq.front()].second;
 		qq.pop_front();
-
-		//거꾸로 x,y랑연결해주기
-		int nowx = find(x);
-		int nowy = find(y);
-
-		//둘다 자기가 루트노드일때
-		if (par[x]==-1&&par[y]==-1) {
-			//cout << "0: 1증가\n";
-			uni(x, y);
-			total++;
-		}
-		//제거했을떄 자기만 뗴어질경우
-		else if (par[x] == -1 && par[y] < -1) {
-			//cout << "1: " << par[nowy]<<"\n";
-			total -= par[nowy];
-			uni(x, y);
-		}
-		else if (par[x] < -1 && par[y] == -1) {
-			//cout << "1: " << par[nowx] << "\n";
-			total -= par[nowx];
-			uni(x, y);
-		}
-		//둘다 루트노드가 아니고 서로 다른부모를 가진경우
-		else if (nowx != nowy) {
-			//cout << "2: " << par[nowx]*par[nowy] << "\n";
-			total += (par[nowx]*par[nowy]);
-			uni(x, y);
-		}
-		
-	
+		x = find(x);
+		y = find(y);
+		if (x == y)
+			continue;
+		total += (par[x])*(par[y]);
+		uni(x, y);
 	}
 	cout << total;
 }
