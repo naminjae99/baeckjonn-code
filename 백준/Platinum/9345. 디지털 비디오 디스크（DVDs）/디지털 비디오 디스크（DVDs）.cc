@@ -92,14 +92,10 @@ int main() {
 			cin >>c>> a >> b;
 	
 			if (c == 0) {
-				//변경
-				int x, y;
-				x = arr[a];
-				y = arr[b];
-
+		
 				//cout << x << ", " << y << "\n";
-				upd(1, 0, n-1 , a,y);
-				upd(1, 0, n-1 , b, x);
+				upd(1, 0, n-1 , a,arr[b]);
+				upd(1, 0, n-1 , b, arr[a]);
 
 				swap(arr[a], arr[b]);
 				//cout << query(1, 0, n - 1, a, a) << ", " << query(1, 0, n - 1, b, b) << "\n\n";
