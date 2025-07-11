@@ -44,7 +44,7 @@ int main() {
 			int xx = stoi(x);
 			
 			bool flag = 0;
-			for (auto it = other.begin(); it != other.end();++it) {
+			for (auto it = other.begin(); it != other.end();it++) {
 				if (it->second >=  xx) {
 					mp[val] = { it->first,xx };
 
@@ -94,4 +94,4 @@ int main() {
 			cout << mp[s].first<<"\n";
 		}
 	}
-}
+} 
