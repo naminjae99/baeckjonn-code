@@ -1,69 +1,56 @@
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#include <stdio.h>
-#include<iostream>
-#include<unordered_map>
-#include<set>
-#include<vector>
-#include<memory.h>
-#include<algorithm>
-#include<math.h>
-#include<queue>
-#include<unordered_set>
-#include<string>
-#include<string.h>
-#include<stack>
-#include<sstream>
-#include<map>
+#include <iostream>
+#include <vector>
 using namespace std;
+
 using ll = long long;
 
+int n;
+vector<int> a;
+vector<int> tmp;
 
-int n, m, k,t;
-vector<pair<int,int>> arr;
-int tree[2000005];
-unordered_map<int, int> mp;
+ll merge_sort(int left, int right) {
+    if (left >= right) return 0;
 
-int query(int no, int s, int e,int l,int r) {
-	if (e < l || r < s)
-		return 0;
-	if (l <= s && e <= r)
-		return tree[no];
-	int mid = (s + e) / 2;
-	int a = query(no * 2, s, mid, l, r);
-	int b = query(no * 2 + 1, mid + 1, e, l, r);
-	return a + b;
-}
+    int mid = (left + right) / 2;
+    ll cnt = 0;
 
-int upd(int no, int s, int e, int idx) {
-	if (e < idx || idx < s)
-		return tree[no];
-	if (s == e)
-		return tree[no] = 1;
-	int mid = (s + e) / 2;
-	int a = upd(no * 2, s, mid, idx);
-	int b = upd(no * 2 + 1, mid + 1, e, idx);
-	return tree[no] = a + b;
+    cnt += merge_sort(left, mid);
+    cnt += merge_sort(mid + 1, right);
+
+    int i = left, j = mid + 1, k = left;
+
+    while (i <= mid && j <= right) {
+        if (a[i] <= a[j]) {
+            tmp[k++] = a[i++];
+        } else {
+            // a[i] > a[j]이므로 역순 쌍 발생
+            tmp[k++] = a[j++];
+            cnt += (mid - i + 1); // i부터 mid까지는 모두 a[j]보다 크다
+        }
+    }
+
+    while (i <= mid) tmp[k++] = a[i++];
+    while (j <= right) tmp[k++] = a[j++];
+
+    // 결과 복사
+    for (int idx = left; idx <= right; idx++) {
+        a[idx] = tmp[idx];
+    }
+
+    return cnt;
 }
 
 int main() {
-	ios::sync_with_stdio(false), cin.tie(NULL), cout.tie(0);
-	cin >> n;
-	int x;
-	arr.push_back({ -1,-1 });
+    ios::sync_with_stdio(false);
+    cin.tie(0);
 
-	for (int i = 1; i <=n; i++) {
-		cin >> x;
-		arr.push_back({ x,i });
-	}
-	sort(arr.begin(), arr.end());
-	ll sum = 0;
-	for (int i = 1; i <= n; i++) {
-		int cnt = query(1, 1, n, arr[i].second + 1, n);
-		sum += (ll)cnt;
-		upd(1, 1, n, arr[i].second);
-	}
-	cout << sum;
+    cin >> n;
+    a.resize(n);
+    tmp.resize(n);
+
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    cout << merge_sort(0, n - 1) << "\n";
+
+    return 0;
 }
