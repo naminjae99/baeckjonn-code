@@ -88,8 +88,8 @@ int main() {
 		if (d[x][y][dir] < cnt)
 			continue;
 		if (x == xx2 && y == yy2) {
-			re = min(re, cnt);
-			continue;
+			cout << cnt;
+			break;
 		}
 		//cout << x << ", " << y << "에서 " << dir << "방향가지고 cnt: " << cnt << "\n";
 	
@@ -127,7 +127,7 @@ int main() {
 		
 
 	}
-	cout << re << "\n";
+	//cout << re << "\n";
 	/*
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
