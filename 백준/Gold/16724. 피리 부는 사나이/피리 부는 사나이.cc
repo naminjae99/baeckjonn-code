@@ -67,15 +67,12 @@ int main() {
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
-			if (vis[i*m + j])
-				continue;
 		
 //			cout << i << " , " << j << "시작\n";
 
 			queue<pair<int, int>>q;
 			q.push({ i,j });
-			vis[i*m + j] = 1;
-
+		
 			while (!q.empty()) {
 				int x = q.front().first;
 				int y = q.front().second;
@@ -91,7 +88,7 @@ int main() {
 				if (uni(x*m + y, nx*m + ny) == 0)
 					continue;
 				q.push({ nx,ny });
-				vis[nx*m + ny] = 1;
+			
 			//	cout << x << ", " << y << "와 ";
 			//	cout << nx <<" , "<< ny << "유니\n";
 			}
