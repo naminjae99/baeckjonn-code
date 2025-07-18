@@ -28,7 +28,8 @@ int dy[4] = { 0,0,-1,1 };
 int trie[8000008][26];
 int used = 2;
 bool chk0[8000008];
-unordered_set<string> mp;
+bool chk1[8000008];
+unordered_map<string, bool> mp;
 
 void insert(string s, bool mode) {
 	int cur = 1;
@@ -37,24 +38,36 @@ void insert(string s, bool mode) {
 			trie[cur][c - 'a'] = used++;
 		cur = trie[cur][c - 'a'];
 	}
-	chk0[cur] = 1;
+	if (mode)
+		chk1[cur] = 1;
+	else
+		chk0[cur] = 1;
 }
-
+bool check1(string s) {
+	int cur = 1;
+	for (auto c : s) {
+		if (trie[cur][c - 'a'] == 0)
+			return 0;
+		cur = trie[cur][c - 'a'];
+	}
+	if (chk1[cur] == 1)
+		return 1;
+	return 0;
+}
 bool check(string s) {
 	int cur = 1;
-	int si = s.size();
-	for (int i = 0; i < si - 1; i++) {  // 색상은 앞에서 시작하므로 i < si - 1
+	for (int i = 0; i < (int)s.size() - 1; i++) { // 색상은 적어도 한 글자, 팀이름도 한 글자
 		int c = s[i] - 'a';
-		if (trie[cur][c] == 0)
-			return false;
+		if (trie[cur][c] == 0) break;
 		cur = trie[cur][c];
-
-		if (chk0[cur] && mp.count(s.substr(i + 1)))
-			return true;
+		if (chk0[cur]) {
+			string team = s.substr(i + 1);
+			if (mp.find(team) != mp.end()) return true;
+		}
 	}
 	return false;
-}
 
+}
 
 int main() {
 	ios::sync_with_stdio(false), cin.tie(NULL), cout.tie(0);
@@ -66,7 +79,7 @@ int main() {
 	}
 	while (m--) {
 		cin >> s;
-		mp.insert(s);
+		mp[s] = 1;
 		//insert(s, 1);
 	}
 	cin >> n;
