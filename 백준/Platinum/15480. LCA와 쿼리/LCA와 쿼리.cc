@@ -66,8 +66,8 @@ int main() {
         int c = lca(v, r);
 
         // 가장 깊은 것 출력
-        int answer = a;
-        if (depth[b] > depth[answer]) answer = b;
+        int answer = b;
+        if (depth[a] > depth[answer]) answer = a;
         if (depth[c] > depth[answer]) answer = c;
         cout << answer << '\n';
     }
