@@ -28,37 +28,45 @@ vector<pair<int, int>> ed[1005];
 
 
 struct f {
-	int now, pre, cnt;
+	int now, cnt;
+	bool operator<(const f& o)const {
+			return cnt > o.cnt;
+	}
 };
-
+int d[1005];
 bool cal(int x) {
-	queue<f> q;
-	q.push({ 1, 0, 0 });
-
-	bool visited[1005][1005] = { 0 };  // 방문 체크
-	visited[1][0] = true;
-
+	priority_queue<f> q;
+	q.push({ 1, 0 });
+	fill(d, d + n + 1, 1e9);
+	d[1] = 0;
+	
 	while (!q.empty()) {
-		int now = q.front().now;
-		int cnt = q.front().cnt;
+		int now = q.top().now;
+		int cnt = q.top().cnt;
+		
 		q.pop();
-
+		if (d[now] < cnt)
+			continue;
 		if (now == n)
 			return true;
 
 		for (auto& c : ed[now]) {
-			int cost = c.first;
-			int next = c.second;
-			int nextCnt = cnt;
-
-			if (cost > x) nextCnt++;  // 비싼 간선이면 카운트 증가
-
-			if (nextCnt > k) continue;
-
-			if (!visited[next][nextCnt]) {
-				visited[next][nextCnt] = true;
-				q.push({ next, 0, nextCnt });
+			if (c.first > x) {
+				if (cnt == k)
+					continue;
+				if (d[c.second] > cnt+1) {
+					d[c.second] = cnt+1;
+					q.push({ c.second,cnt + 1 });
+				}
 			}
+			else {
+				if (d[c.second] >cnt) {
+					d[c.second] = cnt;
+					q.push({ c.second,cnt });
+				}
+			}
+
+			
 		}
 	}
 	return false;
@@ -87,14 +95,14 @@ int main() {
 		mid = (st + en) / 2;
 		//미드를 지불하니깐 미드이상인 노드는 k만이용하기
 		if (cal(mid)) {
-			//cout << st << ", " << en << "\n";
-		//	cout << mid << "초과하는 노드 k개만 이용하기 성공 \n";
+		//	cout << st << ", " << en << "\n";
+			//cout << mid << "초과하는 노드 k개만 이용하기 성공 \n";
 			re = mid;
 			en = mid-1;
 		}
 		else {
-		//	cout << st << ", " << en << "\n";
-		//	cout << mid << "초과하는 노드 k개만 이용하기 실패 \n";
+	//		cout << st << ", " << en << "\n";
+	//		cout << mid << "초과하는 노드 k개만 이용하기 실패 \n";
 			st = mid+1;
 		}
 	}
