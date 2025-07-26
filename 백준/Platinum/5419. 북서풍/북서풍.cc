@@ -26,19 +26,19 @@ int dx[8] = { -1, 1, 0, 0, -1, -1, 1, 1 };
 int dy[8] = { 0, 0, -1, 1, -1, 1, -1, 1 };
 
 
-int tree[400005];
+vector<int> tree;
 
-int upd(int no, int s, int e, int idx) {
+void upd(int no, int s, int e, int idx) {
 	if (e < idx || idx < s)
-		return tree[no];
+		return;
 	if (s == e) {
 		tree[no]++;
-		return tree[no];
+		return;
 	}
 	int mid = (s + e) >> 1;
-	int a = upd(no * 2, s, mid, idx);
-	int b = upd(no * 2 + 1, mid + 1, e, idx);
-	return tree[no] = a + b;
+	upd(no * 2, s, mid, idx);
+	upd(no * 2 + 1, mid + 1, e, idx);
+	tree[no] = tree[no*2]+tree[no*2+1];
 }
 int query(int no, int s, int e, int l, int r) {
 	if (e < l || r < s)
@@ -75,7 +75,7 @@ int main() {
 		cin >> n;
 		v.clear();
 		vv.clear();
-		memset(tree, 0, sizeof(tree));
+		tree.assign(n * 4, 0);
 		for (int i = 0; i < n; i++) {
 			int x, y;
 			cin >> x >> y;
