@@ -33,7 +33,7 @@ int dis[105][10005];
 vector<f> ed[105];
 
 int hs;
-f heap[100005];
+f heap[90005];
 bool cmp(f a, f b) {
 	if (a.cost == b.cost)
 		return a.ti < b.ti;
