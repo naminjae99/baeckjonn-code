@@ -90,7 +90,6 @@ int main() {
 	dp[0] = lec[0].end - lec[0].start;
 
 	for (int i = 1; i < N; i++) {
-		
 		for (int j = 0; j < N; j++) {
 			if (dp[j] == 0) continue; // 아직 도달 불가
 			int travel = dist[lec[j].idx][lec[i].idx];
