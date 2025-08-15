@@ -33,7 +33,6 @@ struct Lecture {
 int timeToMin(const string &s) {
 	return stoi(s.substr(0, 2)) * 60 + stoi(s.substr(3, 2));
 }
-
 // 분 → HH:mm
 string minToTime(int t) {
 	char buf[6];
@@ -84,17 +83,14 @@ int main() {
 	});
 
 	// 첫 강의: 가장 빨리 시작하는 강의
-	int startIdx = 0;
-	for (int i = 1; i < N; i++) {
-		if (lec[i].start < lec[startIdx].start) startIdx = i;
-		else if (lec[i].start == lec[startIdx].start && lec[i].name < lec[startIdx].name) startIdx = i;
-	}
+
+
 
 	vector<int> dp(N, 0);
-	dp[startIdx] = lec[startIdx].end - lec[startIdx].start;
+	dp[0] = lec[0].end - lec[0].start;
 
-	for (int i = 0; i < N; i++) {
-		if (i == startIdx) continue;
+	for (int i = 1; i < N; i++) {
+		
 		for (int j = 0; j < N; j++) {
 			if (dp[j] == 0) continue; // 아직 도달 불가
 			int travel = dist[lec[j].idx][lec[i].idx];
