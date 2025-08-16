@@ -67,7 +67,7 @@ f pop() {
 unordered_set<ll> vis;
 
 int fr, ba;
-ll q[100000005];
+ll q[100005];
 
 int main() {
 	ios::sync_with_stdio(false);
