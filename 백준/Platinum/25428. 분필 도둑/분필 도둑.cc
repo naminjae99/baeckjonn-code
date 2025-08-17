@@ -1,119 +1,64 @@
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include <memory.h>
-#include <vector>
-#include <queue>
-#include <algorithm>
-#include <unordered_map>
-#include <string.h>
-#include <set>
-#include <iomanip>
-#include <unordered_set>
-#include <map>
-#include<cfloat>
-#include<sstream>
-#include<numeric>
-#include <limits>
+#include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 
-
-
-int n, m, k;
-int dx[4] = { -1,1,0,0 };
-int dy[4] = { 0,0,-1,1 };
-
-int par[100005];
-struct node {
-	int a, b, mn;
-	bool operator<(const node& o)const {
-		return mn > o.mn;
-	}
+struct DSU {
+    vector<int> p; // negative size for root, parent index otherwise
+    DSU(int n): p(n+1, -1) {} // 1-indexed
+    int find(int x){ return p[x] < 0 ? x : p[x] = find(p[x]); }
+    bool unite(int a, int b){
+        a = find(a); b = find(b);
+        if (a == b) return false;
+        // union by size (keep a as bigger)
+        if (-p[a] < -p[b]) swap(a, b);
+        p[a] += p[b]; // sizes add (both negative)
+        p[b] = a;
+        return true;
+    }
+    ll size(int x){ return -p[find(x)]; }
 };
-vector<node> v;
 
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-int find(int x) {
-	if (par[x] < 0)
-		return x;
-	return par[x] = find(par[x]);
+    int n;
+    if (!(cin >> n)) return 0;
+    vector<ll> val(n+1);
+    for (int i = 1; i <= n; ++i) cin >> val[i];
+
+    if (n == 1) { // 한 노드면 그 값이 정답
+        cout << val[1] << '\n';
+        return 0;
+    }
+
+    // 간선과 각 간선의 min 값
+    vector<pair<ll, pair<int,int>>> edges;
+    for (int i = 0; i < n-1; ++i){
+        int a,b; cin >> a >> b;
+        ll mn = min(val[a], val[b]);
+        edges.push_back({mn, {a,b}});
+    }
+
+    // min 값 기준 내림차순으로 정렬
+    sort(edges.begin(), edges.end(), [](auto &A, auto &B){
+        return A.first > B.first;
+    });
+
+    DSU dsu(n);
+    ll ans = *max_element(val.begin()+1, val.end()); // single node 선택도 고려
+
+    for (auto &e : edges){
+        ll mn = e.first;
+        int a = e.second.first;
+        int b = e.second.second;
+        if (dsu.find(a) != dsu.find(b)) {
+            dsu.unite(a,b);
+            ll sz = dsu.size(a); // 합쳐진 컴포넌트 크기
+            ans = max(ans, sz * mn);
+        }
+    }
+
+    cout << ans << '\n';
+    return 0;
 }
-void uni(int a, int b) {
-	a = find(a);
-	b = find(b);
-
-	par[a] += par[b];
-	par[b] = a;
-}
-bool chk(int a, int b) {
-	a = find(a);
-	b = find(b);
-	if (a == b)
-		return 1;
-	return 0;
-}
-int cnt[100005];
-int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
-	cin >> n;
-
-
-	int maxi = -1;
-	int root = -1;
-
-	for (int i = 1; i <= n; i++) {
-		int x;
-		cin >> x;
-		cnt[i] = x;
-		par[i] = -1;
-
-		if (x > maxi){
-			maxi = x;
-			root = i;
-		}
-	}
-
-
-	for (int i = 0; i < n - 1; i++) {
-		int a, b;
-		cin >> a >> b;
-		v.push_back({ a,b,min(cnt[a],cnt[b]) });
-	}
-
-	sort(v.begin(), v.end());
-
-	int mx = maxi;
-	
-	for (auto c : v) {
-		int a = c.a;
-		int b = c.b;
-		int mn = c.mn;
-		uni(a, b);
-		
-	//	cout << a << "랑 " << b << "연결하는 거 확인\n";
-
-		//이미 루트랑 같은 묶음이면
-		if (chk(root, a)) {
-			mx = max(-par[find(root)] * mn, mx);
-		//cout << "같은 묶음이라: " << -par[find(root)] * mn << "\n";
-		}
-		else {
-		//	cout << "다른 묶음이라: " << -par[find(a)] * mn << "\n";
-			if (-par[find(a)] * mn > mx) {
-				mx = -par[find(a)] * mn;
-				root = find(a);
-			}
-
-		}
-
-	}
-	cout << mx;
-}
-
-
