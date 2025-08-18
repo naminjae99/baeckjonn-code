@@ -28,45 +28,66 @@ int n, m, k, t;
 int dx[4] = { -1,1,0,0 };
 int dy[4] = { 0,0,-1,1 };
 
-
+struct node {
+	int cnt[26];
+	bool operator<(const node& o)const {
+		for (int i = 0; i < 26; i++) {
+			if (cnt[i] != o.cnt[i])
+				return cnt[i] < o.cnt[i];
+		}
+		return 0;
+	}
+};
 string s1, s2;
-int arr1[1505];
+set<node>s;
 
-int arr2[1505];
-unordered_set<string>mp;
 int main() {
 	ios::sync_with_stdio(false);
 	cin.tie(0);
 	cin >> s1 >> s2;
 
-	if (s1.size() > s2.size()) 
+
+	if (s1.size() > s2.size())
 		swap(s1, s2);
+	int sz1 = s1.size();
+	int sz2 = s2.size();
 	
+	node c;
 
-	
-	
-	for (int si = s1.size(); si >= 1; si--) {
-		string s;
-	//	cout << "s2: \n";
-
-		for (int i = 0; i <=s2.size()-si; i++) {
-			s=s2.substr(i, si);
-			sort(s.begin(), s.end());
-			//cout << s << "\n";
-			mp.insert(s);
+	for (int sz = sz1-1; sz >= 0; sz--) {
+		s.clear();
+		
+		for (int i = 0; i < 26; i++)
+			c.cnt[i] = 0;
+		for (int i = 0; i <= sz; i++)
+			c.cnt[s1[i] - 'a']++;
+		s.insert(c);
+		for (int i = sz + 1; i < sz1; i++) {
+			c.cnt[s1[i] - 'a']++;
+			c.cnt[s1[i - sz - 1] - 'a']--;
+			s.insert(c);
 		}
-	//	cout << "s1: \n";
-		for (int i = 0; i <= s1.size()-si; i++) {
-			s = s1.substr(i, si);
-			sort(s.begin(), s.end());
-		//	cout << s << "\n";
-			if (mp.find(s) != mp.end()) {
-				cout << si;
+
+		for (int i = 0; i < 26; i++)
+			c.cnt[i] = 0;
+		for (int i = 0; i <= sz; i++)
+			c.cnt[s2[i] - 'a']++;
+		if (s.count(c)) {
+			cout << sz + 1;
+			return 0;
+		}
+		for (int i = sz + 1; i < sz2; i++) {
+			c.cnt[s2[i] - 'a']++;
+			c.cnt[s2[i - sz - 1] - 'a']--;
+			if (s.count(c)) {
+				cout << sz + 1;
 				return 0;
 			}
 		}
+
 	}
 	
+
 	cout << 0;
 
 }
