@@ -33,8 +33,6 @@ int idx;
 vector<pair<int, int>>ed[205];
 int st, en;
 int d[205];
-int par[205];
-int par_mn[205];
 
 int main() {
 	ios::sync_with_stdio(false);
@@ -85,22 +83,12 @@ int main() {
 				if (d[c.first] < nmn) {
 					d[c.first] = nmn;
 					q.push({d[c.first],c.first });
-					par[c.first] = now;
-					par_mn[c.first] = c.second;
 				}
 			}
 		}
 
-		int pre = par[en];
-		int now = en;
-		int re = 1e9;
-		while (now != st) {
-			re = min(re, par_mn[now]);
-			now = pre;
-			pre = par[pre];
-		}
 		cout << "Scenario #" << tc << "\n";
-		cout << re << " tons\n\n";
+		cout << d[en] << " tons\n\n";
 
 	}
 }
