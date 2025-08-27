@@ -1,150 +1,133 @@
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#include <stdio.h>
 #include <iostream>
 #include <string>
-#include <memory.h>
 #include <vector>
-#include<queue>
-#include<algorithm>
-#include<unordered_map>
-#include<string.h>
-#include<set>
-#include<iomanip>
-#include<unordered_set>
+#include <queue>
+#include <string.h>
 
 using namespace std;
-int n, t, m;
-int dx[4] = { -1,1,0,0 };
-int dy[4] = { 0,0,-1,1 };
 
+// 전역 변수 대신 함수 내에 선언
+int n, m;
 char arr[105][105];
-bool key[26];
-bool vis[105][105];
-int re;
-bool fd[105][105];
+bool has_key[26];
+bool visited[105][105];
+int dx[] = { -1, 1, 0, 0 };
+int dy[] = { 0, 0, -1, 1 };
+
+// 잠긴 문들의 위치를 저장하는 벡터
+vector<pair<int, int>> locked_doors[26];
 
 void init() {
-	re = 0;
-	memset(vis, 0, sizeof(vis));
-	memset(key, 0, sizeof(key));
-	memset(fd, 0, sizeof(fd));
-}
-void input() {
-	cin >> n >> m;
-	for (int i = 1; i <= n; i++) {
-		string s;
-		cin >> s;
-		for (int j = 1; j <= m; j++) {
-			arr[i][j] = s[j - 1];
-		}
-	}
-	string s;
-	cin >> s;
-	if (s == "0")
-		return;
-	for (auto c : s) {
-		key[c - 'a'] = 1;
-	}
+    memset(arr, 0, sizeof(arr));
+    memset(has_key, false, sizeof(has_key));
+    memset(visited, false, sizeof(visited));
+    for (int i = 0; i < 26; i++) {
+        locked_doors[i].clear();
+    }
 }
 
-queue<pair<int, int>> q;
-void fq() {
-	for (int i = 1; i <= m; i++) {
-		q.push({ 0,i });
-		vis[0][i] = 1;
-		q.push({ n + 1,i });
-		vis[n + 1][i] = 1;
-	}
-	for (int i = 1; i <= n; i++) {
-		q.push({ i,0 });
-		vis[i][0] = 1;
-		q.push({ i,m + 1 });
-		vis[i][m + 1] = 1;
-	}
-}
+void solve() {
+    init();
+    cin >> n >> m;
+    for (int i = 1; i <= n; i++) {
+        string s;
+        cin >> s;
+        for (int j = 1; j <= m; j++) {
+            arr[i][j] = s[j - 1];
+        }
+    }
+    string s;
+    cin >> s;
+    if (s != "0") {
+        for (char c : s) {
+            has_key[c - 'a'] = true;
+        }
+    }
 
+    queue<pair<int, int>> q;
+    int found_docs = 0;
 
-void bfs() {
-	while (!q.empty()) {
-		int x = q.front().first;
-		int y = q.front().second;
-		q.pop();
+    // 맵의 테두리부터 탐색 시작
+    for (int i = 0; i <= n + 1; i++) {
+        for (int j = 0; j <= m + 1; j++) {
+            if (i == 0 || i == n + 1 || j == 0 || j == m + 1) {
+                // 경계선에 해당하는 가상의 칸
+                if (!visited[i][j]) {
+                    q.push({ i, j });
+                    visited[i][j] = true;
+                }
+            }
+        }
+    }
 
-		for (int i = 0; i < 4; i++) {
-			int nx = x + dx[i];
-			int ny = y + dy[i];
-			if (nx<0 || nx>n || ny<0 || ny>m)
-				continue;
-			if (arr[nx][ny] == '*')
-				continue;
-			if (vis[nx][ny])
-				continue;
-			if (arr[nx][ny] == '.') {
-				vis[nx][ny] = 1;
-				q.push({ nx,ny });
-			}
-			else if (arr[nx][ny] == '$') {
-				vis[nx][ny] = 1;
-				q.push({ nx,ny });
-				fd[nx][ny] = 1;
-			}
-			else if (arr[nx][ny] >= 'A'&&arr[nx][ny] <= 'Z') {
-				if (key[arr[nx][ny] - 'A']) {
-					vis[nx][ny] = 1;
-					q.push({ nx,ny });
-				}
-			}
-			else {
-				//새 키를 찾으면 다시시작
-				if (key[arr[nx][ny] - 'a'] == 0) {
-					memset(vis, 0, sizeof(vis));
-					key[arr[nx][ny] - 'a'] = 1;
-					q = {};
-					fq();
-					bfs();
-					return;
-				}
-				vis[nx][ny] = 1;
-				q.push({ nx,ny });
-			}
-		}
-	}
-}
-void pr() {
-	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= m; j++) {
-			cout << vis[i][j] << " ";
-		}
-		cout << "\n";
-	}
-	cout << "\n\n";
+    while (!q.empty()) {
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+
+        for (int i = 0; i < 4; i++) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            if (nx < 1 || nx > n || ny < 1 || ny > m) {
+                // 경계선 밖으로 나가는 경우(가상의 경계선에 접근)
+                if (nx >= 0 && nx <= n + 1 && ny >= 0 && ny <= m + 1) {
+                    if (!visited[nx][ny]) {
+                        q.push({ nx, ny });
+                        visited[nx][ny] = true;
+                    }
+                }
+                continue;
+            }
+
+            if (arr[nx][ny] == '*' || visited[nx][ny]) {
+                continue;
+            }
+
+            char cell = arr[nx][ny];
+
+            if (cell >= 'a' && cell <= 'z') { // 새로운 열쇠를 찾은 경우
+                has_key[cell - 'a'] = true;
+                visited[nx][ny] = true;
+                q.push({ nx, ny });
+
+                // 해당 열쇠로 열 수 있게 된 문들을 큐에 추가
+                for (auto& p : locked_doors[cell - 'a']) {
+                    if (!visited[p.first][p.second]) {
+                        q.push(p);
+                        visited[p.first][p.second] = true;
+                    }
+                }
+                // 더 이상 필요 없는 문 목록은 비워줌
+                locked_doors[cell - 'a'].clear();
+            } else if (cell >= 'A' && cell <= 'Z') { // 잠긴 문을 만난 경우
+                if (has_key[cell - 'A']) { // 열쇠가 있으면
+                    visited[nx][ny] = true;
+                    q.push({ nx, ny });
+                } else { // 열쇠가 없으면
+                    // 나중에 열쇠를 찾았을 때 다시 방문하도록 위치 저장
+                    locked_doors[cell - 'A'].push_back({ nx, ny });
+                }
+            } else { // '.', '$'
+                if (cell == '$') {
+                    found_docs++;
+                }
+                visited[nx][ny] = true;
+                q.push({ nx, ny });
+            }
+        }
+    }
+    cout << found_docs << "\n";
 }
 
 int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
 
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cin >> t;
-	while (t--) {
-		init();
-		input();
-		
-		q = {};
-		fq();
-
-		bfs();
-	
-
-		for (int i = 1; i <= n; i++) {
-			for (int j = 1; j <= m; j++) {
-				if (fd[i][j])
-					re++;
-			}
-		}
-
-		cout << re << "\n";
-	}
+    int T;
+    cin >> T;
+    while (T--) {
+        solve();
+    }
+    return 0;
 }
