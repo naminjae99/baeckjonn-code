@@ -1,568 +1,389 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
 #include <iostream>
-#include <algorithm>
-#include <vector>
-#include <queue>
+#include <string>
 #include <memory.h>
-#include <iomanip>
+#include <vector>
+#include<queue>
+#include<algorithm>
+#include<unordered_map>
+#include<string.h>
+#include<set>
+#include<iomanip>
+#include<unordered_set>
 
 using namespace std;
+int n, t, m, k;
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,-1,1 };
 
-int n, m;
-char arr[11][11];
-int order[11];
-char tmp[11][11];
-int re = 12;
 
-int tl() {
-	for (int i = 1; i < n - 1; i++) {
-		int rd = -1;
-		int bd = -1;
 
-		//첫번째 벽과 b r 위치찾아주기
-		for (int j = 1; j < m - 1; j++) {
-			if (tmp[i][j] == 'R')
-				rd = j;
-			if (tmp[i][j] == 'B')
-				bd = j;
-		}
+int arr[10][10];
+pair<int, int> r, b;
 
-		//r b없는경우
-		if (rd == -1 && bd == -1)
-			continue;
-
-		//b만있는경우 b의 인덱스-1 부터 왼쪽으로밀기 
-		if (rd == -1 && bd != -1){
-			int st = bd;
-			for (int j = st - 1; j > 0; j--) {
-				if (tmp[i][j] == '.') {
-					tmp[i][bd] = '.';
-					tmp[i][j] = 'B';
-					bd = j;
-				}
-				if (tmp[i][j] == '#')
-					break;
-				if (tmp[i][j] == 'O')
-					return -1;
+void input() {
+	string s;
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) {
+		cin >> s;
+		for (int j = 0; j < m; j++) {
+			if (s[j] == '#')
+				arr[i][j] = -1;
+			else if (s[j] == 'R') {
+				r = { i,j };
+				arr[i][j] = 1;
 			}
-		}
-
-		if (rd != -1 && bd == -1) {
-			int st = rd;
-			for (int j = st - 1; j > 0; j--) {
-				if (tmp[i][j] == '.') {
-					tmp[i][rd] = '.';
-					tmp[i][j] = 'R';
-					rd = j;
-				}
-				if (tmp[i][j] == '#')
-					break;
-				if (tmp[i][j] == 'O')
-					return 1;
+			else if (s[j] == 'B') {
+				b = { i,j };
+				arr[i][j] = 2;
 			}
+			else if (s[j] == 'O')
+				arr[i][j] = 3;
 		}
+	}
+}
 
-		//둘다있는경우
-		if (rd != -1 && bd != -1) {
-			if (rd < bd) {
-				int flag = 0;
-				int st = rd;
-				for (int j = st - 1; j > 0; j--) {
-					if (tmp[i][j] == '.') {
-						tmp[i][rd] = '.';
-						tmp[i][j] = 'R';
-						rd = j;
-					}
-					if (tmp[i][j] == '#')
+int ord[10];
+int ret = -1;
+
+
+void cal(int dep) {
+
+	int copy[10][10];
+	memcpy(copy, arr, sizeof(arr));
+
+	pair<int, int> cr, cb;
+	cr = r;
+	cb = b;
+
+	int fx, fy;
+
+	
+
+	for (int mv = 0; mv < dep; mv++) {
+
+		
+
+		if (ord[mv] == 0) {
+			//cb가 먼저
+			if (cr.first < cb.first) {
+				fx = cb.first;
+				for (int i = cb.first+1; i < n; i++) {
+					if (copy[i][cb.second] == -1) {
+						fx = i - 1;
 						break;
-					if (tmp[i][j] == 'O') {
-						tmp[i][rd] = '.';
+					}
+					if (copy[i][cb.second] == 3)
+						return;
+				}
+			
+
+				copy[cb.first][cb.second] = 0;
+				copy[fx][cb.second] = 2;
+				cb.first = fx;
+
+
+				fx = cr.first;
+				for (int i = cr.first; i < n; i++) {
+					if (copy[i][cr.second] == -1 || copy[i][cr.second] == 2) {
+						fx = i - 1;
+						break;
+					}
+					if (copy[i][cr.second] == 3) {
+						ret = mv + 1;
+						return;
+					}
+				}
+				copy[cr.first][cr.second] = 0;
+				copy[fx][cr.second] = 1;
+				cr.first = fx;
+			}
+
+			else {
+				bool flag = 0;
+
+				fx = cr.first;
+				for (int i = cr.first; i < n; i++) {
+					if (copy[i][cr.second] == -1) {
+						fx = i - 1;
+						break;
+					}
+					if (copy[i][cr.second] == 3) {
 						flag = 1;
 						break;
 					}
 				}
-				st = bd;
-				for (int j = st - 1; j > 0; j--) {
-					if (tmp[i][j] == '.') {
-						tmp[i][bd] = '.';
-						tmp[i][j] = 'B';
-						bd = j;
-					}
-					if (tmp[i][j] == '#')
+				copy[cr.first][cr.second] = 0;
+				cr.first = fx;
+				if (flag == 0) 
+					copy[fx][cr.second] = 1;
+				
+			
+				fx = cb.first;
+				for (int i = cb.first; i < n; i++) {
+					if (copy[i][cb.second] == -1 || copy[i][cb.second] == 1) {
+						fx = i - 1;
 						break;
-					if (tmp[i][j] == 'O')
-						return -1;
+					}
+					if (copy[i][cb.second] == 3)
+						return;
 				}
-				if (flag == 1)
-					return 1;
+				copy[cb.first][cb.second] = 0;
+				copy[fx][cb.second] = 2;
+				cb.first = fx;
+				if (flag) {
+					ret = mv + 1;
+					return;
+				}
 			}
+
+		
+		}
+
+		else if (ord[mv] == 1) {
+			//cb가 먼저
+			if (cr.first > cb.first) {
+				fx = cb.first;
+				for (int i = cb.first; i >= 0; i--) {
+					if (copy[i][cb.second] == -1) {
+						fx = i + 1;
+						break;
+					}
+					if (copy[i][cb.second] == 3)
+						return;
+				}
+				copy[cb.first][cb.second] = 0;
+				copy[fx][cb.second] = 2;
+				cb.first = fx;
+				fx = cr.first;
+				for (int i = cr.first; i >= 0; i--) {
+					if (copy[i][cr.second] == -1 || copy[i][cr.second] == 2) {
+						fx = i + 1;
+						break;
+					}
+					if (copy[i][cr.second] == 3) {
+						ret = mv + 1;
+						return;
+					}
+				}
+				copy[cr.first][cr.second] = 0;
+				copy[fx][cr.second] = 1;
+				cr.first = fx;
+			}
+
 			else {
-				int st = bd;
-				for (int j = st - 1; j > 0; j--) {
-					if (tmp[i][j] == '.') {
-						tmp[i][bd] = '.';
-						tmp[i][j] = 'B';
-						bd = j;
-					}
-					if (tmp[i][j] == '#')
+				bool flag = 0;
+
+				fx = cr.first;
+				for (int i = cr.first; i >= 0; i--) {
+					if (copy[i][cr.second] == -1) {
+						fx = i + 1;
 						break;
-					if (tmp[i][j] == 'O')
-						return -1;
-				}
-				st = rd;
-				for (int j = st - 1; j > 0; j--) {
-					if (tmp[i][j] == '.') {
-						tmp[i][rd] = '.';
-						tmp[i][j] = 'R';
-						rd = j;
 					}
-					if (tmp[i][j] == '#')
-						break;
-					if (tmp[i][j] == 'O')
-						return 1;
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-int td() {
-	for (int i = 1; i < m - 1; i++) {
-		int rd = -1;
-		int bd = -1;
-
-		//첫번째 벽과 b r 위치찾아주기
-		for (int j = 1; j < n - 1; j++) {
-			if (tmp[j][i] == 'R')
-				rd = j;
-			if (tmp[j][i] == 'B')
-				bd = j;
-		}
-
-		//r b없는경우
-		if (rd == -1 && bd == -1)
-			continue;
-
-		//b만있는경우 b의 인덱스+1부터 내리기
-		if (rd == -1 && bd != -1) {
-			int st = bd;
-			for (int j = st+1; j <n-1; j++) {
-				if (tmp[j][i] == '.') {
-					tmp[bd][i] = '.';
-					tmp[j][i] = 'B';
-					bd = j;
-				}
-				if (tmp[j][i] == '#')
-					break;
-				if (tmp[j][i] == 'O')
-					return -1;
-			}
-		}
-
-		if (rd != -1 && bd == -1) {
-			int st = rd;
-			for (int j = st + 1; j < n - 1; j++) {
-				if (tmp[j][i] == '.') {
-					tmp[rd][i] = '.';
-					tmp[j][i] = 'R';
-					rd = j;
-				}
-				if (tmp[j][i] == '#')
-					break;
-				if (tmp[j][i] == 'O')
-					return 1;
-			}
-		}
-
-		//둘다있는경우
-		if (rd != -1 && bd != -1) {
-			if (rd > bd) {
-				int flag = 0;
-				int st = rd;
-				for (int j = st + 1; j < n - 1; j++) {
-					if (tmp[j][i] == '.') {
-						tmp[rd][i] = '.';
-						tmp[j][i] = 'R';
-						rd = j;
-					}
-					if (tmp[j][i] == '#')
-						break;
-					if (tmp[j][i] == 'O') {
+					if (copy[i][cr.second] == 3) {
 						flag = 1;
-						tmp[rd][i] = '.';
 						break;
 					}
 				}
+				copy[cr.first][cr.second] = 0;
+				if (flag == 0)
+					copy[fx][cr.second] = 1;
+				cr.first = fx;
 
-				st = bd;
-				for (int j = st + 1; j < n - 1; j++) {
-					if (tmp[j][i] == '.') {
-						tmp[bd][i] = '.';
-						tmp[j][i] = 'B';
-						bd = j;
-					}
-					if (tmp[j][i] == '#')
+
+				fx = cb.first;
+				for (int i = cb.first; i >= 0; i--) {
+					if (copy[i][cb.second] == -1 || copy[i][cb.second] == 1) {
+						fx = i + 1;
 						break;
-					if (tmp[j][i] == 'O')
-						return -1;
+					}
+					if (copy[i][cb.second] == 3)
+						return;
 				}
-				if (flag == 1)
-					return 1;
+				copy[cb.first][cb.second] = 0;
+				copy[fx][cb.second] = 2;
+				cb.first = fx;
+				if (flag) {
+					ret = mv + 1;
+					return;
+				}
+			}
+		}
+
+		else if (ord[mv] == 2) {
+			//cb가 먼저
+			if (cr.second > cb.second) {
+				fy = cb.second;
+				for (int i = cb.second; i >= 0; i--) {
+					if (copy[cb.first][i] == -1) {
+						fy = i + 1;
+						break;
+					}
+					if (copy[cb.first][i] == 3)
+						return;
+				}
+				copy[cb.first][cb.second] = 0;
+				copy[cb.first][fy] = 2;
+				cb.second = fy;
+
+				fy = cr.second;
+				for (int i = cr.second; i >= 0; i--) {
+					if (copy[cr.first][i] == -1 || copy[cr.first][i] == 2) {
+						fy = i + 1;
+						break;
+					}
+					if (copy[cr.first][i] == 3) {
+						ret = mv + 1;
+						return;
+					}
+				}
+				copy[cr.first][cr.second] = 0;
+				copy[cr.first][fy] = 1;
+				cr.second = fy;
+
 			}
 
 			else {
-				int st = bd;
-				for (int j = st + 1; j < n - 1; j++) {
-					if (tmp[j][i] == '.') {
-						tmp[bd][i] = '.';
-						tmp[j][i] = 'B';
-						bd = j;
-					}
-					if (tmp[j][i] == '#')
-						break;
-					if (tmp[j][i] == 'O')
-						return -1;
-				}
-				st = rd;
-				for (int j = st + 1; j < n - 1; j++) {
-					if (tmp[j][i] == '.') {
-						tmp[rd][i] = '.';
-						tmp[j][i] = 'R';
-						rd = j;
-					}
-					if (tmp[j][i] == '#')
-						break;
-					if (tmp[j][i] == 'O')
-						return 1;
-				}
-			}
-		}
-	}
-	return 0;
-}
+				bool flag = 0;
 
-int tr(){
-	for (int i = 1; i < n - 1; i++) {
-		int rd = -1;
-		int bd = -1;
-
-		//첫번째 벽과 b r 위치찾아주기
-		for (int j = 1; j < m - 1; j++) {
-			if (tmp[i][j] == 'R')
-				rd = j;
-			if (tmp[i][j] == 'B')
-				bd = j;
-		}
-
-		//r b없는경우
-		if (rd == -1 && bd == -1)
-			continue;
-
-		//b만있는경우 b의 인덱스-1 부터 왼쪽으로밀기 
-		if (rd == -1 && bd != -1) {
-			int st = bd;
-			for (int j = st +1; j <m-1; j++) {
-				if (tmp[i][j] == '.') {
-					tmp[i][bd] = '.';
-					tmp[i][j] = 'B';
-					bd = j;
-				}
-				if (tmp[i][j] == '#')
-					break;
-				if (tmp[i][j] == 'O')
-					return -1;
-			}
-		}
-
-		if (rd != -1 && bd == -1) {
-			int st = rd;
-			for (int j = st + 1; j < m - 1; j++) {
-				if (tmp[i][j] == '.') {
-					tmp[i][rd] = '.';
-					tmp[i][j] = 'R';
-					rd = j;
-				}
-				if (tmp[i][j] == '#')
-					break;
-				if (tmp[i][j] == 'O')
-					return 1;
-			}
-		}
-
-		//둘다있는경우
-		if (rd != -1 && bd != -1) {
-			if (rd < bd) {
-				int st = bd;
-				for (int j = st + 1; j < m - 1; j++) {
-					if (tmp[i][j] == '.') {
-						tmp[i][bd] = '.';
-						tmp[i][j] = 'B';
-						bd = j;
-					}
-					if (tmp[i][j] == '#')
-						break;
-					if (tmp[i][j] == 'O')
-						return -1;
-				}
-				st = rd;
-				for (int j = st + 1; j < m - 1; j++) {
-					if (tmp[i][j] == '.') {
-						tmp[i][rd] = '.';
-						tmp[i][j] = 'R';
-						rd = j;
-					}
-					if (tmp[i][j] == '#')
-						break;
-					if (tmp[i][j] == 'O')
-						return 1;
-				}
-
-			}
-			else {
-				int st = rd;
-				int flag = 0;
-				for (int j = st + 1; j < m - 1; j++) {
-					if (tmp[i][j] == '.') {
-						tmp[i][rd] = '.';
-						tmp[i][j] = 'R';
-						rd = j;
-					}
-					if (tmp[i][j] == '#')
-						break;
-					if (tmp[i][j] == 'O') {
-						tmp[i][rd] = '.';
-						flag=1;
+				fy = cr.second;
+				for (int i = cr.second; i >= 0; i--) {
+					if (copy[cr.first][i] == -1) {
+						fy = i + 1;
 						break;
 					}
-				}
-				st = bd;
-				for (int j = st + 1; j < m - 1; j++) {
-					if (tmp[i][j] == '.') {
-						tmp[i][bd] = '.';
-						tmp[i][j] = 'B';
-						bd = j;
-					}
-					if (tmp[i][j] == '#')
-						break;
-					if (tmp[i][j] == 'O')
-						return -1;
-				}
-				if (flag == 1)
-					return 1;
-			}
-		}
-	}
-	return 0;
-}
-int tu() {
-	for (int i = 1; i < m - 1; i++) {
-		int rd = -1;
-		int bd = -1;
-
-		//첫번째 벽과 b r 위치찾아주기
-		for (int j = 1; j < n - 1; j++) {
-			if (tmp[j][i] == 'R')
-				rd = j;
-			if (tmp[j][i] == 'B')
-				bd = j;
-		}
-
-		//r b없는경우
-		if (rd == -1 && bd == -1)
-			continue;
-
-		//b만있는경우 b의 인덱스+1부터 내리기
-		if (rd == -1 && bd != -1) {
-			int st = bd;
-			for (int j = st - 1; j >0; j--) {
-				if (tmp[j][i] == '.') {
-					tmp[bd][i] = '.';
-					tmp[j][i] = 'B';
-					bd = j;
-				}
-				if (tmp[j][i] == '#')
-					break;
-				if (tmp[j][i] == 'O')
-					return -1;
-			}
-		}
-
-		if (rd != -1 && bd == -1) {
-			int st = rd;
-			for (int j = st - 1; j > 0; j--) {
-				if (tmp[j][i] == '.') {
-					tmp[rd][i] = '.';
-					tmp[j][i] = 'R';
-					rd = j;
-				}
-				if (tmp[j][i] == '#')
-					break;
-				if (tmp[j][i] == 'O')
-					return 1;
-			}
-		}
-
-		//둘다있는경우
-		if (rd != -1 && bd != -1) {
-			if (rd > bd) {
-				int st = bd;
-				for (int j = st - 1; j > 0; j--) {
-					if (tmp[j][i] == '.') {
-						tmp[bd][i] = '.';
-						tmp[j][i] = 'B';
-						bd = j;
-					}
-					if (tmp[j][i] == '#')
-						break;
-					if (tmp[j][i] == 'O')
-						return -1;
-				}
-				st = rd;
-				for (int j = st - 1; j > 0; j--) {
-					if (tmp[j][i] == '.') {
-						tmp[rd][i] = '.';
-						tmp[j][i] = 'R';
-						rd = j;
-					}
-					if (tmp[j][i] == '#')
-						break;
-					if (tmp[j][i] == 'O')
-						return 1;
-				}
-
-			}
-			else {
-				int flag = 0;
-				int st = rd;
-				for (int j = st - 1; j > 0; j--) {
-					if (tmp[j][i] == '.') {
-						tmp[rd][i] = '.';
-						tmp[j][i] = 'R';
-						rd = j;
-					}
-					if (tmp[j][i] == '#')
-						break;
-					if (tmp[j][i] == 'O') {
+					if (copy[cr.first][i] == 3) {
 						flag = 1;
-						tmp[rd][i] = '.';
 						break;
 					}
-						
 				}
-				st = bd;
-				for (int j = st - 1; j > 0; j--) {
-					if (tmp[j][i] == '.') {
-						tmp[bd][i] = '.';
-						tmp[j][i] = 'B';
-						bd = j;
-					}
-					if (tmp[j][i] == '#')
+				copy[cr.first][cr.second] = 0;
+				if (flag == 0)
+					copy[cr.first][fy] = 1;
+				cr.second = fy;
+
+				fy = cb.second;
+				for (int i = cb.second; i >= 0; i--) {
+					if (copy[cb.first][i] == -1 || copy[cb.first][i] == 1) {
+						fy = i + 1;
 						break;
-					if (tmp[j][i] == 'O')
-						return -1;
+					}
+					if (copy[cb.first][i] == 3)
+						return;
 				}
-				if (flag == 1)
-					return 1;
+				copy[cb.first][cb.second] = 0;
+				copy[cb.first][fy] = 2;
+				cb.second = fy;
+
+				if (flag) {
+					ret = mv + 1;
+					return;
+				}
 			}
 		}
+		else if (ord[mv] == 3) {
+			//cb가 먼저
+			if (cr.second < cb.second) {
+				fy = cb.second;
+				for (int i = cb.second; i < m; i++) {
+					if (copy[cb.first][i] == -1) {
+						fy = i - 1;
+						break;
+					}
+					if (copy[cb.first][i] == 3)
+						return;
+				}
+				copy[cb.first][cb.second] = 0;
+				copy[cb.first][fy] = 2;
+				cb.second = fy;
+
+				fy = cr.second;
+				for (int i = cr.second; i < m; i++) {
+					if (copy[cr.first][i] == -1 || copy[cr.first][i] == 2) {
+						fy = i - 1;
+						break;
+					}
+					if (copy[cr.first][i] == 3) {
+						ret = mv + 1;
+						return;
+					}
+				}
+				copy[cr.first][cr.second] = 0;
+				copy[cr.first][fy] = 1;
+				cr.second = fy;
+
+			}
+
+			else {
+				bool flag = 0;
+
+				fy = cr.second;
+				for (int i = cr.second; i < m; i++) {
+					if (copy[cr.first][i] == -1) {
+						fy = i - 1;
+						break;
+					}
+					if (copy[cr.first][i] == 3) {
+						flag = 1;
+						break;
+					}
+				}
+				copy[cr.first][cr.second] = 0;
+				if (flag == 0)
+					copy[cr.first][fy] = 1;
+				cr.second = fy;
+
+				fy = cb.second;
+				for (int i = cb.second; i < m; i++) {
+					if (copy[cb.first][i] == -1 || copy[cb.first][i] == 1) {
+						fy = i - 1;
+						break;
+					}
+					if (copy[cb.first][i] == 3)
+						return;
+				}
+				copy[cb.first][cb.second] = 0;
+				copy[cb.first][fy] = 2;
+				cb.second = fy;
+
+				if (flag) {
+					ret = mv + 1;
+					return;
+				}
+			}
+		}
+
+		
 	}
-	return 0;
 }
-void f(int dep) {
-	if (dep > 10)
+void dfs(int dep,int mok) {
+	if (ret != -1)
 		return;
 
-	if (dep > 0) {
-		//dep=돌려야할 횟수
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				tmp[i][j] = arr[i][j];
-			}
-		}
-		int tmpr=-1;
-
-		for (int i = 0; i < dep; i++) {
-			if (order[i] == 0) {
-				int a = tl();
-				if (a== -1)
-					return;
-				tmpr = max(tmpr,a);
-			}
-			if (order[i] == 1) {
-				int a = td();
-				if (a == -1)
-					return;
-				tmpr = max(tmpr, a);
-			}
-			if (order[i] == 2) {
-				int a = tr();
-				if (a == -1)
-					return;
-				tmpr = max(tmpr, a);
-			}
-			if (order[i] == 3) {
-				int a = tu();
-				if (a == -1)
-					return;
-				tmpr = max(tmpr, a);
-			}
-		}
-		/*
-		cout << "조합\n";
-		for (int i = 0; i < dep; i++) {
-			cout << order[i]<<" ";
-		}
-		cout << "\n";
-		cout << "상태\n";
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				cout << tmp[i][j] << " ";
-			}
-			cout << "\n";
-		}
-		cout << "\n";
-		cout << "\n";
-		*/
-
-		if (tmpr == 1) {
-			re = min(re, dep);
-		}
+	if (dep == mok) {
+		cal(dep);
+		return;
 	}
 
 	for (int i = 0; i < 4; i++) {
-		order[dep] = i;
-		f(dep + 1);
+		ord[dep] = i;
+		dfs(dep + 1,mok);
 	}
-		
-
 }
 int main() {
-	cin >> n >> m;
-	for (int i = 0; i < n; i++) {
-		string s;
-		cin >> s;
-		for (int j = 0; j < m; j++) {
-			arr[i][j] = s[j];
-		}
-	}
-	f(0);
-	/*
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			tmp[i][j] = arr[i][j];
-		}
-	}
-	tl();
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			cout << tmp[i][j] << " ";
-		}
-		cout << "\n";
-	}
-	*/
-	if (re == 12)
-		cout << -1;
-	else
-		cout << re;
 
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+
+	input();
+
+	for(int i=1;i<11;i++)
+		dfs(0,i);
+
+
+	cout << ret;
 }
