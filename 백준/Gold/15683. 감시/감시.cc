@@ -1,138 +1,368 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <memory.h>
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
 using namespace std;
+using ll = long long;
 
-struct cc {
-	int x;
-	int y;
-	int s;
-	int d;
+int dx[4] = { -1,1,0,0};
+int dy[4] = { 0,0,1,-1 };
+
+int n, m,k,ret;
+int arr[8][8];
+struct f {
+	int x, y, num;
 };
+f info[8];
 
-int n, m;
-int  arr[10][10];
-int  na[10][10];
-
-
-int re;
-int cnt;
-
-int dx[4] = {0,1,0,-1};
-int dy[4] = {1,0,-1,0};
-
-//종류 방향 x y
-vector <cc> v;
-
-
-void check(int grid[][10], int x, int y, int dir) {
-	int nx = x, ny = y;
-	while (true) {
-		nx += dx[dir];
-		ny += dy[dir];
-		if (nx < 0 || nx >= n || ny < 0 || ny >= m || grid[nx][ny] == 6)
-			break;
-		if (grid[nx][ny] == 0)
-			grid[nx][ny] = -1;
-	}
-}
-
-void dfs() {
-	memcpy(na, arr, sizeof(arr));
-
-	for (int i = 0; i < v.size(); i++) {
-		int x = v[i].x;
-		int y = v[i].y;
-		int state = v[i].s;
-		int dir = v[i].d;
-
-		if (state == 1) {
-			check(na, x, y, dir);
-		}
-		if (state == 2) {
-			check(na, x, y, dir);
-			check(na, x, y, (dir+2)%4);
-		}
-		if (state == 3) {
-			check(na, x, y, dir);
-			check(na, x, y, (dir + 3) % 4);
-		}
-		if (state == 4) {
-			check(na, x, y, dir);
-			check(na, x, y, (dir + 3) % 4);
-			check(na, x, y, (dir + 2) % 4);
-		}
-		if (state == 5) {
-			check(na, x, y, dir);
-			check(na, x, y, (dir + 1) % 4);
-			check(na, x, y, (dir + 3) % 4);
-			check(na, x, y, (dir + 2) % 4);
-		}
-	}
-
-
-	int tmp = 0;
+int dir[8];
+int idx;
+void input() {
+	cin >> n>>m;
+	ret = 1e9;
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
-			if (na[i][j] ==0){
-				tmp += 1;
+			cin >> arr[i][j];
+			if (arr[i][j] >= 1 && arr[i][j] <= 5)
+				info[idx++] = { i,j,arr[i][j] };
+		}
+	}
+}
+int cpy[8][8];
+void cal() {
+	memcpy(cpy, arr, sizeof(arr));
+	for (int i = 0; i < idx; i++) {
+		int x = info[i].x;
+		int y = info[i].y;
+		int num = info[i].num;
+		int d = dir[i];
+
+		if (num == 1) {
+			for (int i = 0; i < 8; i++) {
+				int nx = x + dx[d] * i;
+				int ny = y + dy[d] * i;
+				if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+					break;
+				cpy[nx][ny] = -1;
+				if (arr[nx][ny] == 6)
+					break;
+			}
+		}
+		else if (num == 2) {
+			if (d == 0 || d == 1) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[0] * i;
+					int ny = y + dy[0] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[1] * i;
+					int ny = y + dy[1] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+			else {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[2] * i;
+					int ny = y + dy[2] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[3] * i;
+					int ny = y + dy[3] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+		}
+
+		else if (num == 3) {
+			if (d == 0) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[0] * i;
+					int ny = y + dy[0] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[2] * i;
+					int ny = y + dy[2] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+			else if (d == 1) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[1] * i;
+					int ny = y + dy[1] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[3] * i;
+					int ny = y + dy[3] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+			else if (d == 2) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[1] * i;
+					int ny = y + dy[1] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[2] * i;
+					int ny = y + dy[2] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+			else if (d == 3) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[0] * i;
+					int ny = y + dy[0] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[3] * i;
+					int ny = y + dy[3] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+		}
+
+		else if (num == 4) {
+			if (d == 0) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[0] * i;
+					int ny = y + dy[0] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[2] * i;
+					int ny = y + dy[2] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[3] * i;
+					int ny = y + dy[3] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+			else if (d == 1) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[3] * i;
+					int ny = y + dy[3] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[2] * i;
+					int ny = y + dy[2] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[1] * i;
+					int ny = y + dy[1] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+			else if (d == 2) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[0] * i;
+					int ny = y + dy[0] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[2] * i;
+					int ny = y + dy[2] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[1] * i;
+					int ny = y + dy[1] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+			else if (d == 3) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[0] * i;
+					int ny = y + dy[0] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[3] * i;
+					int ny = y + dy[3] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[1] * i;
+					int ny = y + dy[1] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
+			}
+
+		}
+		else if (num == 5) {
+			for (int j = 0; j < 4; j++) {
+				for (int i = 0; i < 8; i++) {
+					int nx = x + dx[j] * i;
+					int ny = y + dy[j] * i;
+					if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+						break;
+					cpy[nx][ny] = -1;
+					if (arr[nx][ny] == 6)
+						break;
+				}
 			}
 		}
 	}
-	re = min(re, tmp);
+
 	
-	return;
+	int re = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (cpy[i][j] == 0)
+				re++;
+		}
+	}
+	ret = min(ret, re);
 }
 
-void f(int dep) {
-	if (dep == v.size()) {
-		int flag = 0;
-		for (int i = 0; i < v.size(); i++) {
-			if (v[i].s == 2 && v[i].d >= 2)
-				flag = 1;
-			if (v[i].s == 5 && v[i].d >= 1)
-				flag = 1;
-		}
-		if (flag == 1)
-			return;
-		else {
-			dfs();
-			return;
-		}
-		
+void dfs(int dep) {
+	if (dep == idx) {
+		cal();
+		return;
 	}
 
-	for (int i = 0; i < 4; i++) {
-		
-		v[dep].d = i;
-		
-		f(dep + 1);
+	if (info[dep].num == 2) {
+		for (int i = 0; i < 4; i += 2) {
+			dir[dep] = i;
+			dfs(dep + 1);
+		}
 	}
-
+	else if (info[dep].num == 5) {
+			dfs(dep + 1);
+	}
+	else {
+		for (int i = 0; i < 4; i++) {
+			dir[dep] = i;
+			dfs(dep + 1);
+		}
+	}
 }
 
 int main() {
-	ios::sync_with_stdio(0), cin.tie(0);
-	cout.tie(0);
-	cin >> n >> m;
+	ios::sync_with_stdio(false);
+	cin.tie(nullptr);
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			int a;
-			cin >> a;
-			arr[i][j] = a;
-			if (arr[i][j] != 0 && arr[i][j] != 6) {
-				v.push_back({ i,j,a,0 });
-			}
-		}
-
-
-	}
-	re = m * n;
-	f(0);
-
-	cout << re;
+	input();
+	dfs(0);
+	cout << ret;
 }
