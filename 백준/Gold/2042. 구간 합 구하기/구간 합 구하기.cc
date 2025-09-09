@@ -11,65 +11,88 @@
 #include<algorithm>
 #include<math.h>
 #include<queue>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
 using namespace std;
-using ll=long long ;
-ll n, k, m;
-ll arr[1000001];
-ll tree[4000004];
-int i;	
-ll  init(int N, int st, int en) {
-	if (st == en) {
-		return	tree[N] = arr[st];
-	}
-	int mid = (st + en) / 2;
-	ll a=	init(2 * N, st, mid);
-	ll b=init(2 * N + 1, mid + 1, en);
-	tree[N] = a+b;
-	return tree[N];
-}
-ll query(int N,int st,int en,int l,int r) {
-	if (st > r || en < l)
-		return 0;
-	if (st >= l && en <= r) {
-		return tree[N];
-	}
-	int mid = (st + en) / 2;
-	ll a=query(2 * N, st, mid,l,r);
-	ll b=query(2 * N + 1, mid + 1, en,l,r);
-	return a + b;
-}
-void update(int N, int st, int en, int x, ll val) {
-	if (st > x || en < x)
-		return;
-	if (st == en) {
-		tree[N] += val;
-		return;
-	}
-	int mid = (st + en) / 2;
-	update(2 * N, st, mid, x, val);
-	update(2 * N + 1, mid + 1, en, x, val);
-	tree[N] = tree[2 * N]+ tree[N * 2 + 1] ;
-}
-int main()
-{
-	ios::sync_with_stdio(false);
-	cin.tie(NULL);
-	cin >> n >> m >> k;
-	for (i = 1; i <= n; i++)
-		cin >> arr[i];
-	init(1, 1, n);
+using ll = long long;
+int dx[4] = { 0,-1,0,1 };
+int dy[4] = { 1,0,-1,0 };
 
-	ll cmd,a,b;
-	for (i = 0; i < m + k; i++) {
-		cin >> cmd >> a >> b;
-		if (cmd == 1) {
-			ll dif = b-arr[a];
-			arr[a] = b;
-			update(1, 1, n, a, dif);
-			
+int n, m, t, ret, h, k;
+
+
+ll arr[1000005];
+
+
+ll sum[1005];
+void upd(int idx, ll x) {
+	int nn = idx / 1000;
+	sum[nn] -= arr[idx];
+	arr[idx] = x;
+	sum[nn] += arr[idx];
+}
+ll query(int x, int y) {
+	int xx = x / 1000;
+	int yy = y / 1000;
+
+	ll re = 0;
+	if (xx == yy) {
+		for (int i = x; i <= y; i++)
+			re+=arr[i];
+		return re;
+	}
+
+	for (int i = x ;i <(xx+1)*1000; i++)
+		re += arr[i];
+	for (int i = xx+1; i < yy; i++)
+		re += sum[i];
+	for (int i = yy * 1000; i <= y; i++)
+		re += arr[i];
+	return re;
+
+}
+void input() {
+	cin >> n >> m >> k;
+	for (int i = 0; i < n; i++)
+		cin >> arr[i];
+
+	int nn = n / 1000;
+	for (int i = 0; i < nn; i++) {
+		int st = i * 1000;
+		int en = i * 1000 + 1000;
+		for (int j = st; j < en; j++) {
+			sum[i] += arr[j];
+		}
+	}
+	for (int j = nn * 1000; j < n; j++)
+		sum[nn] += arr[j];
+
+
+	m += k;
+	while (m--) {
+		int a, b;
+		ll c;
+		cin >> a >> b >> c;
+		if (a == 1) {
+			upd(b-1, c);
 		}
 		else {
-			cout << query(1, 1, n, a, b)<<"\n";
+			cout<<query(b-1,c-1)<<"\n";
 		}
 	}
+}
+
+
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin.tie(nullptr);
+
+	
+	input();
 }
