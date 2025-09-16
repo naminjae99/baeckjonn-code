@@ -14,75 +14,80 @@
 #include<unordered_set>
 #include<string>
 #include<string.h>
-
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
 using namespace std;
 using ll = long long;
+int dx[4] = { 0,0,-1,1 };
+int dy[4] = { 1,-1,0,0 };
 
-int t, n, m;
-int tree[4000008];
+int n, t, ret, m;
+int tree[4000005];
 
-int init(int no,int s, int e) {
-	if (s == e) {
-		return tree[no] = 0;
-	}
-	int mid = (s + e) / 2;
-	int a=init(no * 2, s, mid);
-	int b=init(no * 2 + 1, mid + 1, e);
-	return tree[no] =(a+b);
-}
-
-int query(int no, int s, int e, int cnt) {
+int query(int no, int s, int e,int x) {
 	if (s == e)
 		return s;
+
 	int mid = (s + e) / 2;
-	//왼쪽자식이
-	if (tree[no * 2] >= cnt)
-		return query(no * 2, s, mid, cnt);
-	return query(no * 2+1, mid+1, e, cnt - tree[no * 2]);
+	int left = tree[no * 2];
+
+	if (left >= x)
+		return query(no * 2, s, mid, x);
+	return query(no * 2+1, mid + 1, e, x - left);
+	
+}
+void upd(int no, int s, int e, int idx, int x) {
+	if (e < idx || idx < s)
+		return ;
+
+	tree[no] += x;
+	if (s == e) 
+		return ;
+	
+
+	int mid = (s + e) / 2;
+	upd(no * 2, s, mid, idx, x);
+	upd(no * 2 + 1, mid + 1, e, idx, x);
+//	tree[no] = tree[no * 2] + tree[no * 2 + 1];
+}
+void input() {
+	cin >> n;
+	while (n--) {
+		int cmd,a,b;
+		cin >> cmd;
+		if (cmd == 1) {
+			cin >> a;
+			int idx=query(1, 1, 1000000, a);
+			cout << idx<<"\n";
+			upd(1, 1, 1000000, idx, -1);
+		}
+		else {
+			cin >> a >> b;
+			upd(1, 1, 1000000, a, b);
+		}
+	}
+}
+void solve() {
+
+
 }
 
-int upd(int no, int s, int e, int idx,int x) {
-	
-	if (s > idx || e < idx)
-		return tree[no]; 
-	if (s == e) {
-		return tree[no]+=x;
-	}
-	int mid = (s + e) / 2;
-	int a=upd(no * 2, s, mid, idx,x);
-	int b=upd(no * 2 + 1, mid + 1, e, idx,x);
-	return tree[no] =(a+b);
-}
 
 
 int main() {
 	ios::sync_with_stdio(false);
-	cin.tie(NULL);
-	cin >> n;
-
-	int a, b, c;
-	while (n--) {
-		cin >> a;
-
-		//꺼내기
-		if (a == 1) {
-			cin >> b;
-			int idx = query(1, 1, 1000000, b);
-			cout << idx<<"\n";
-			upd(1, 1, 1000000, idx, -1);
-			//arr[idx]--;
-		}
-		//b맛을 c개넣기
-		else {
-			cin >> b >> c;
-			upd(1, 1, 1000000, b, c);
-			//arr[b] += c;
-		
-		}
-	}
+	cin.tie(nullptr);
 
 
-	
-	return 0;
+	input();
+	solve();
+
+
+	//cout << ret;
 
 }
