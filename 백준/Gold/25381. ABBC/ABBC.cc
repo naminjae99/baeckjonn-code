@@ -27,33 +27,51 @@ int dy[9] = { 0,0,-1,-1,-1,0,1,1,1 };
 
 int n, t, ret, h, k, m;
 string s;
-queue<int> b;
-queue<int> c;
-
+deque<int> b;
+deque<int> c;
+deque<int> a;
 void input() {
 	cin >> s;
+
 	int si = s.size();
-	for (int i = si - 1; i >= 0; i--) {
+	for (int i = 0; i < si;i++) {
 		if (s[i] == 'A') {
-			if (b.empty())
-				continue;
-			else {
-				ret++;
-				b.pop();
-			}
+			a.push_back(i);
 		}
 		else if (s[i] == 'B') {
-			if (c.empty()) {
-				b.push(1);
-			}
-			else {
-				ret++;
-				c.pop();
-			}
+			b.push_back(i);
 		}
 		else {
-			c.push(1);
+			c.push_back(i);
 		}
+	}
+	//b가 나오면 맨앞에 a를 사용
+	//c가 나오면  맨뒤 b를 사용
+	while (!a.empty()) {
+		int x = a.back();
+		a.pop_back();
+		if (!b.empty()) {
+			int y = b.back();
+			if (x < y) {
+				b.pop_back();
+				ret++;
+			}
+		}
+		else
+			continue;
+	}
+	while (!b.empty()) {
+		int x = b.back();
+		b.pop_back();
+		if (!c.empty()) {
+			int y =c.back();
+			if (x < y) {
+				c.pop_back();
+				ret++;
+			}
+		}
+		else
+			continue;
 	}
 }
 void solve() {
