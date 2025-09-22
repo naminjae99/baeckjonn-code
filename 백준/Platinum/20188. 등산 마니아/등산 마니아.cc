@@ -55,20 +55,14 @@ void input() {
 		ed[b].push_back(a);
 	}
 	dfs(1);
-	total = n * (n - 1) / 2;
 
 	for (int i = 1; i <= n; i++) {
 		int p = par[i];
 		if (p == 0)
 			continue;
-
-		ll ssi = sub[i];
-		ll bsi = n-ssi;
+		ll as = sub[i];
 	
-		//cout << i << "와 " << p << "의 서브트리: " << ssi << ", " << bsi << "\n";
-
-		bsi = bsi * (bsi - 1) / 2;
-		re += total - bsi;
+		re += as * (as - 1) / 2 + as * (n - as);
 	}
 	cout << re;
 }
