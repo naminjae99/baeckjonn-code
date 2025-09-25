@@ -24,55 +24,54 @@
 using namespace std;
 
 int n, idx;
-//mode==1 홀짝트리
-
-int vis[1000005];
-vector<int> ed[1000005];
-int mode;
-
-int dfs(int x) {
-	vis[x] = 1;
-	int child = 0;
-
-	for (auto c : ed[x]) {
-		if (!vis[c]) {
-			if (!dfs(c)) {
-				vis[x] = 0;
-				return 0;
-			}
-			child++;
-		}
-	}
-	vis[x] = 0;
-
-	// 이 노드에서 홀짝 조건 체크
-	if (mode == ((x % 2) == (child % 2)))
-		return 1;
-	return 0;
-}
-
+bool vis[400005];
+int rmp[400005];
+vector<int> ed[400005];
+unordered_map<int, int> mp;
+int q[400005];
+int fr, ba;
 vector<int> solution(vector<int> nodes, vector<vector<int>> edges) {
+	for (auto c : nodes) {
+		rmp[idx] = c;
+		mp[c] = idx++;
+		
+	}
+
 	for (auto &c : edges) {
-		ed[c[0]].push_back(c[1]);
-		ed[c[1]].push_back(c[0]);
+		int s = mp[c[0]];
+		int e = mp[c[1]];
+		ed[s].push_back(e);
+		ed[e].push_back(s);
 	}
 
 	vector<int> answer(2, 0);
 
-	for (auto c : nodes) {
-		if ((c % 2) == (ed[c].size() % 2))
-			mode = 1;
-		else
-			mode = 0;
-	
-		
-		if (dfs(c)) {
-			if (mode == 1) answer[0]++;
-			else answer[1]++;
+	for (int i = 0; i < idx; i++) {
+		if (vis[i])
+			continue;
+		int tree[2] = { 0,0 };
+		fr = ba = 0;
+		q[ba++] = i;
+		vis[i] = 1;
+		while (fr < ba) {
+			int x = q[fr++];
+
+			for (auto c : ed[x]) {
+				if (vis[c])
+					continue;
+				q[ba++] = c;
+				vis[c] = 1;
+			}
+			if ((rmp[x] % 2) == (ed[x].size() % 2))
+				tree[0]++;
+			else
+				tree[1]++;
 		}
+		if (tree[0] == 1)
+			answer[0]++;
+		if (tree[1] == 1)
+			answer[1]++;
 	}
 	return answer;
 }
-
-
 
