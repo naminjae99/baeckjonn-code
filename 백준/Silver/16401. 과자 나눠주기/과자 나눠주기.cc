@@ -38,7 +38,7 @@ void input() {
 	}
 	int st = 1;
 	
-	int re = 0;
+
 	while (st <= en) {
 		int mid = (st + en) / 2;
 	
@@ -46,7 +46,7 @@ void input() {
 		for (int i = 0; i < m; i++) {
 			cnt += (arr[i] / mid);
 			if (cnt >= n) {
-				re = mid;
+	
 				st = mid + 1;
 				break;
 			}
@@ -57,7 +57,7 @@ void input() {
 		}
 	}
 
-	cout << re;
+	cout << st-1;
 }
 void solve() {
 
