@@ -31,10 +31,9 @@ int arr[1000005];
 
 void input() {
 	cin >> n >> m;
-	int en = 0;
+	int en = 1e9;
 	for (int i = 0; i < m; i++) {
 		cin >> arr[i];
-		en = max(arr[i], en);
 	}
 	int st = 1;
 	
