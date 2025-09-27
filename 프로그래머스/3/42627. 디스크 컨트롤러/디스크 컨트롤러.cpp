@@ -1,3 +1,4 @@
+
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -25,21 +26,15 @@
 using namespace std;
 using ll = long long;
 
-int dx[4] = { 0,1,0,-1 };
-int dy[4] = {  1,0,-1,0};
-
-int n, m;
-
 struct Node {
-	int num, t, dt;
+	int  t, dt;
 };
 bool cmp(Node a, Node b) {
 	if (a.dt != b.dt)
 		return a.dt < b.dt;
-	if (a.t != b.t)
-		return a.t < b.t;
-	return a.num < b.num;
+	return a.t < b.t;
 }
+
 int hs;
 Node heap[100005];
 void push(Node x) {
@@ -61,9 +56,9 @@ Node pop() {
 		int le = i * 2 + 1;
 		int ri = i * 2 + 2;
 		int pr = i;
-		if (le < hs&&cmp(heap[le], heap[pr]))
+		if (le < hs && cmp(heap[le], heap[pr]))
 			pr = le;
-		if (ri < hs&&cmp(heap[ri], heap[pr]))
+		if (ri < hs && cmp(heap[ri], heap[pr]))
 			pr = ri;
 		if (pr == i)
 			break;
@@ -73,42 +68,40 @@ Node pop() {
 	return re;
 }
 
-vector<Node> v;
-bool cmp2(Node a, Node b) {
-		return a.t < b.t;
-}
+
+
 int now = 0;
 Node cur;
-int en[505];
+
 int idx = 0;
 int total;
+
 int solution(vector<vector<int>> jobs) {
 	total = jobs.size();
-	for (int i = 0; i < total;i++)
-		v.push_back({ i,jobs[i][0],jobs[i][1] });
-	sort(v.begin(), v.end(), cmp2);
+	int sum = 0;
 
-	while (idx < total || hs > 0) {
-		while (idx < total && v[idx].t <= now) 
-			push(v[idx++]);
-		
+	sort(jobs.begin(), jobs.end());
 
-		//대기큐가 있으면 하나뽑고 시간업데이트
-		if (hs) {
-			cur = pop();
-			//now마치는 시간으로 변경
-			now += cur.dt;
-			en[cur.num] = now - cur.t;
+
+	while (1) {
+		if (idx >= total &&hs==0)
+			break;
+
+		// 현재 시간 이하의 작업 추가
+		while (idx < total && jobs[idx][0] <= now) {
+			push({jobs[idx][0], jobs[idx][1]});
+			idx++;
 		}
-		//시간증가
+
+		if (hs > 0) {
+			cur = pop();
+			now += cur.dt;
+			sum+= now - cur.t;
+		}
 		else {
-			now++;
+			now = jobs[idx][0];
 		}
 	}
 
-	int answer = 0;
-	for (int i = 0; i < total; i++)
-		answer += en[i];
-
-	return answer/total;
+	return sum / total;
 }
