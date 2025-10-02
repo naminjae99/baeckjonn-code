@@ -1,105 +1,69 @@
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#include <stdio.h>
-#include<iostream>
-#include<unordered_map>
-#include<set>
-#include<vector>
-#include<memory.h>
-#include<algorithm>
-#include<math.h>
-#include<queue>
-#include<deque>
-#include<unordered_set>
-#include<string>
-#include<string.h>
-#include<stack>
-#include<sstream>
-#include<iomanip>
-#include<deque>
-#include<array>
-#include<limits.h>
-#include<cfloat>
-#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 
-int dx[4] = { -1,0,1,0 };
-int dy[4] = { 0,1,0,-1 };
-
-int n, m, ret, k, t, h;
-
-
-pair<int, int> xy[2005];
-vector<pair<int,int>> ed[2005];
-int par[2005];
-
-struct f {
-	int x, y, cost;
-	bool operator<(const f& o)const {
-		return cost < o.cost;
-	}
+struct Edge {
+    int u, v;
+    int cost;
+    bool operator<(const Edge& o) const {
+        return cost < o.cost;
+    }
 };
-vector<f>v;
+
+int n, c;
+pair<int, int> pos[2005];
+int parent[2005];
 
 int find(int x) {
-	if (par[x] < 0)
-		return x;
-	return par[x] = find(par[x]);
-}
-void uni(int a, int b) {
-	a = find(a);
-	b = find(b);
-	if (a == b)
-		return;
-	par[b] = a;
-}
-void input() {
-	cin >> n >> m;
-	memset(par, -1, sizeof(par));
-	for (int i = 1; i <= n; i++) {
-		int x, y;
-		cin >> x >> y;
-		xy[i] = { x,y };
-	}
-
-	for (int i = 1; i <= n; i++) {
-		for (int j = i+1; j <= n; j++) {
-			int dis = (xy[i].first - xy[j].first)*(xy[i].first - xy[j].first)
-				+ (xy[i].second - xy[j].second)*(xy[i].second - xy[j].second);
-			if (dis >= m) {
-				v.push_back({ i,j,dis });
-			}
-		}
-	}
-	sort(v.begin(), v.end());
-
-	int cnt = 0;
-	for (auto c : v) {
-		int x = c.x;
-		int y = c.y;
-		if (find(x) == find(y))
-			continue;
-		uni(x, y);
-		cnt++;
-		ret += c.cost;
-if (cnt == n - 1)
-			return;
-	}
-	ret = -1;
-
+    if (parent[x] < 0) return x;
+    return parent[x] = find(parent[x]);
 }
 
-void solve() {
-
+bool uni(int a, int b) {
+    a = find(a);
+    b = find(b);
+    if (a == b) return false;
+    if (parent[a] > parent[b]) swap(a, b); // union by size
+    parent[a] += parent[b];
+    parent[b] = a;
+    return true;
 }
+
 int main() {
-	fastio;
-	input();
-	solve();
-	cout << ret;
-	return 0;
-}
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
+    cin >> n >> c;
+    for (int i = 1; i <= n; i++) {
+        cin >> pos[i].first >> pos[i].second;
+    }
+
+    vector<Edge> edges;
+    edges.reserve(n * (n - 1) / 2);
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = i + 1; j <= n; j++) {
+            int dx = pos[i].first - pos[j].first;
+            int dy = pos[i].second - pos[j].second;
+            int dist = dx * dx + dy * dy;
+            if (dist >= c) edges.push_back({i, j, dist});
+        }
+    }
+
+    sort(edges.begin(), edges.end());
+    fill(parent, parent + n + 1, -1);
+
+    int cnt = 0, result = 0;
+    for (auto& e : edges) {
+        if (uni(e.u, e.v)) {
+            result += e.cost;
+            if (++cnt == n - 1) {
+                cout << result;
+                return 0;
+            }
+        }
+    }
+
+    cout << -1;
+    return 0;
+}
