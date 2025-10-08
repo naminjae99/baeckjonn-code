@@ -26,8 +26,8 @@
 using namespace std;
 using ll = long long;
 
-int dx[4] = {1,-1,0,0};
-int dy[4] = {0,0,1,-1 };
+int dx[4] = { 1,-1,0,0 };
+int dy[4] = { 0,0,1,-1 };
 int n, m, ret, k, t, h, w;
 
 pair<int, int> xy[105];
@@ -37,7 +37,8 @@ int mok[105];
 pair<int, int> now[105];
 
 
-int mp[105][105];
+
+unordered_map<int, int> mp;
 
 int finish[105];
 
@@ -56,18 +57,17 @@ int solution(vector<vector<int>> points, vector<vector<int>> routes) {
 		now[i] = xy[x];
 		//1번 xy를 목표로 가야함
 		mok[i] = 1;
-		mp[xy[x].first][xy[x].second]++;
+		mp[xy[x].first*1000+xy[x].second]++;
 	}
-	for (int i = 1; i <= 100; i++) {
-		for (int j = 1; j <= 100; j++) {
-			if (mp[i][j] > 1)
-				ret++;
-		}
+	for (auto c : mp) {
+		if (c.second > 1)
+			ret++;
 	}
+	
 
 
 	while (1) {
-		memset(mp, 0, sizeof(mp));
+		mp.clear();
 
 		bool flag = 0;
 
@@ -77,9 +77,9 @@ int solution(vector<vector<int>> points, vector<vector<int>> routes) {
 
 			if (finish[i])
 				continue;
-			
+
 			flag = 1;
-		
+
 
 			int mx = xy[routes[i][mok[i]]].first;
 			int my = xy[routes[i][mok[i]]].second;
@@ -95,34 +95,32 @@ int solution(vector<vector<int>> points, vector<vector<int>> routes) {
 					continue;
 				if ((abs(nx - mx) + abs(ny - my)) < dis) {
 					now[i] = { nx,ny };
-					mp[nx][ny]++;
-					if (nx == mx && ny == my) 
+					mp[nx*1000+ny]++;
+					if (nx == mx && ny == my)
 						mok[i]++;
-				//	cout << nx << "," << ny << "로 이동했음\n";
+					//	cout << nx << "," << ny << "로 이동했음\n";
 					if (mok[i] == routes[i].size()) {
 						finish[i] = 1;
 					}
 					break;
 				}
 			}
-			
 
-		
+
+
 		}
 
 		if (flag == 0)
 			break;
 
-		
 
-		for (int i = 1; i <= 100; i++) {
-			for (int j = 1; j <= 100; j++) {
-				if (mp[i][j] > 1)
-					ret++;
-			}
+
+		for (auto c : mp) {
+			if (c.second > 1)
+				ret++;
 		}
 	}
 
-	
+
 	return ret;
 }
