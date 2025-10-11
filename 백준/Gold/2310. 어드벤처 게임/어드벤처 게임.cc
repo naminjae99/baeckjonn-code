@@ -39,25 +39,27 @@ struct f {
 //n번방을 m 비용을 가진채 방문
 int vis[1005][505];
 
-
+int qx[100005];
+int qy[100005];
+int fr, ba;
 
 void solve() {
 	memset(vis, 0, sizeof(vis));
-	queue<pair<int, int>> q;
+	fr = ba = 0;
 
 	vis[1][0] = 1;
-	q.push({ 1,0 });
+	qx[ba] = 1, qy[ba++] = 0;
 
 
-	while (!q.empty()) {
-		int x = q.front().first;
-		int cost = q.front().second;
-		q.pop();
+	while (fr<ba) {
+		int x = qx[fr];
+		int cost = qy[fr++];
+		
 
 
 		if (info[x].room == 'L') {
-			 if (cost < info[x].cost) {
-				 cost = info[x].cost;
+			if (cost < info[x].cost) {
+				cost = info[x].cost;
 			}
 		}
 		else if (info[x].room == 'T') {
@@ -68,7 +70,7 @@ void solve() {
 				continue;
 		}
 
-	//	cout << x << ", " << cost << "\n\n";
+		//	cout << x << ", " << cost << "\n\n";
 
 
 
@@ -81,7 +83,8 @@ void solve() {
 			if (c == x)
 				continue;
 			if (vis[c][cost] == 0) {
-				q.push({ c,cost });
+				qx[ba] = c;
+				qy[ba++] = cost;
 				vis[c][cost] = 1;
 			}
 		}
