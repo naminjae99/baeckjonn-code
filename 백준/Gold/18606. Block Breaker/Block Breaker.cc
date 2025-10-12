@@ -38,32 +38,14 @@ void input() {
 }
 
 bool check(int x, int y) {
-	bool r, c;
-	r = c = 0;
-	//좌우 상하중 두개 없으면
-	for (int z = 0; z < 2; z++) {
-		int nx = x + dx[z];
-		int ny = y + dy[z];
-		if (nx<1 || nx>n || ny<1 || ny>m)
-			continue;
-		if (arr[nx][ny]) {
-			r = 1;
-			break;
-		}
-	}
-	for (int z = 2; z < 4; z++) {
-		int nx = x + dx[z];
-		int ny = y + dy[z];
-		if (nx<1 || nx>n || ny<1 || ny>m)
-			continue;
-		if (arr[nx][ny]) {
-			c = 1;
-			break;
-		}
-	}
-	if (r&&c)
+	if (((arr[x - 1][y] || arr[x + 1][y]) && (arr[x][y - 1] || arr[x][y + 1])))
+	{
 		return 1;
-	return 0;
+	}
+	else
+	{
+		return 0;
+	}
 }
 void solve() {
 	cin >> t;
@@ -97,8 +79,6 @@ void solve() {
 				for (int i = 0; i < 4; i++) {
 					int nx = x + dx[i];
 					int ny = y + dy[i];
-					if (nx<1 || ny<1 || nx>n || ny>m)
-						continue;
 					if (arr[nx][ny])
 						continue;
 					if (check(nx, ny)) {
@@ -111,7 +91,7 @@ void solve() {
 
 			cout << sum << "\n";
 
-	
+			
 		}
 	}
 }
