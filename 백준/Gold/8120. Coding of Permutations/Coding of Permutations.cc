@@ -52,16 +52,16 @@ int query(int node, int s, int e, int x) {
 
 	//cout << s << "," << e << "에서 왼쪽 자식" << left << "개" << "찾아야하는건 " << x << "개\n";
 
-	if (left >= x) 
+	if (left >= x)
 		return query(node * 2, s, mid, x);
-	return query(node * 2 + 1, mid + 1, e, x-left);
+	return query(node * 2 + 1, mid + 1, e, x - left);
 }
 
 int upd(int node, int s, int e, int idx) {
 	if (e < idx || idx < s)
 		return tree[node];
-	if (s == e) 
-		return tree[node]=0;
+	if (s == e)
+		return tree[node] = 0;
 	int mid = (s + e) >> 1;
 	int a = upd(node * 2, s, mid, idx);
 	int b = upd(node * 2 + 1, mid + 1, e, idx);
@@ -77,22 +77,19 @@ void input() {
 			return;
 		}
 	}
-	stack<int> ss;
-	for (int i = n; i >=1; i--) {
+
+	for (int i = n; i >= 1; i--) {
 		//자기보다 앞에 i-1개가 있는데 자기보다 큰건b cnt개가 있어야함
 		int bcnt = b[i];
 		//cout << i << "는" << tree[1] << "개 중에서 자기보다 큰게" << b[i] << "개 여야함\n";
 		//cout << "즉 " << tree[1] - b[i] << "번 원소 찾기\n";
-		int x=query(1, 1, n, tree[1]- bcnt);
+		int x = query(1, 1, n, tree[1] - bcnt);
 		//cout << x << "\n\n";
-		ss.push(x);
+		a[i] = x;
 		upd(1, 1, n, x);
-
-	
 	}
-	while(!ss.empty()){
-		cout << ss.top()<<"\n";
-		ss.pop();
+	for (int i = 1; i <= n; i++) {
+		cout << a[i] << "\n";
 	}
 }
 
