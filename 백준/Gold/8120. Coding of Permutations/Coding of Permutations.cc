@@ -30,64 +30,69 @@ int dx[4] = { -1,1,0,0 };
 int dy[4] = { 0,0,1,-1 };
 int n, m, ret, k, t, Q, p;
 
+vector<int>a;
+vector<int>b;
+vector<int>tree;
 
-int a[30005];
-int b[30005];
-int tree[122222];
-int build(int node, int s, int e) {
-	if (s == e)
-		return tree[node] = 1;
-	int mid = (s + e) >> 1;
-	int a = build(node * 2, s, mid);
-	int b = build(node * 2 + 1, mid + 1, e);
-	return tree[node] = a + b;
-}
-//왼쪽에서 합이 x인 인덱스 반환
-int query(int node, int s, int e, int x) {
-	if (s == e)
-		return s;
+int st;
 
-	int left = tree[node * 2];
-	int mid = (s + e) >> 1;
-
-	//cout << s << "," << e << "에서 왼쪽 자식" << left << "개" << "찾아야하는건 " << x << "개\n";
-
-	if (left >= x)
-		return query(node * 2, s, mid, x);
-	return query(node * 2 + 1, mid + 1, e, x - left);
+//구간합이 3이되는 인덱스
+int query(int x) {
+	int idx = 1;
+	while (idx <= st) {
+		if (tree[idx << 1] >= x)
+			idx = idx << 1;
+		else {
+			x-= tree[idx << 1];
+			idx = idx << 1 | 1;
+		}
+	}
+	return idx - st; // 실제 값 반환
 }
 
-int upd(int node, int s, int e, int idx) {
-	if (e < idx || idx < s)
-		return tree[node];
-	if (s == e)
-		return tree[node] = 0;
-	int mid = (s + e) >> 1;
-	int a = upd(node * 2, s, mid, idx);
-	int b = upd(node * 2 + 1, mid + 1, e, idx);
-	return tree[node] = a + b;
+void upd(int idx,int x) {
+	 int i=idx + st;
+	while (i) {
+		tree[i]+=x;
+		i /= 2;
+	}
 }
 void input() {
 	cin >> n;
-	build(1, 1, n);
+
+	// n보다 같거나 큰 젤 작은 2의 거듭제곱수 찾기
+	for (st = 1; st < n; st <<= 1)
+		1;
+
+	tree.assign(st * 2, 0);
+	st--;
+
+	a.resize(1+n);
+	b.resize(n+1);
+
+	// 모든 수가 살아있다고 세팅
 	for (int i = 1; i <= n; i++) {
+		upd(i, 1);
 		cin >> b[i];
+	}
+
+	
+
+	for (int i = n; i >= 1; i--) {
+	
 		if (b[i] >= i) {
 			cout << "NIE";
 			return;
 		}
+	
+		int x=query(tree[1] - b[i]);
+	
+
+		a[i] = x;
+		upd(x, -1);
 	}
 
-	for (int i = n; i >= 1; i--) {
-		//자기보다 앞에 i-1개가 있는데 자기보다 큰건b cnt개가 있어야함
-		int bcnt = b[i];
-		//cout << i << "는" << tree[1] << "개 중에서 자기보다 큰게" << b[i] << "개 여야함\n";
-		//cout << "즉 " << tree[1] - b[i] << "번 원소 찾기\n";
-		int x = query(1, 1, n, tree[1] - bcnt);
-		//cout << x << "\n\n";
-		a[i] = x;
-		upd(1, 1, n, x);
-	}
+	
 	for (int i = 1; i <= n; i++) {
 		cout << a[i] << "\n";
 	}
