@@ -11,65 +11,83 @@
 #include<algorithm>
 #include<math.h>
 #include<queue>
+#include<deque>
 #include<unordered_set>
 #include<string>
 #include<string.h>
 #include<stack>
 #include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
 #include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
 using namespace std;
 using ll = long long;
 
-int n, m, k, t;
-int tree[8000008];
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,1,-1 };
+int n, m, ret, t, k, Q;
 
-void upd(int no, int s, int e, int idx,int x) {
-	if (e < idx || idx < s)
-		return;
-	if (s == e) {
-		tree[no]+=x;
-		return;
-	}
-	int mid = (s + e) / 2;
-	upd(no * 2, s, mid, idx,x);
-	upd(no * 2 + 1, mid + 1, e, idx,x);
-	tree[no] = tree[no * 2] + tree[no * 2 + 1];
-}
-int ret;
-void query(int no,int s,int e,int x) {
-	if (s == e) {
-		ret = s;
-		tree[no]--;
-		return;
-	}
-	int left = tree[no * 2];
-	int mid = (s + e) / 2;
+int tree[5000005];
+void upd(int val, int x) {
+	int i = m + val;
 
-	if (x<=left) {
-		query(no*2, s, mid, x);
+	while (i) {
+		tree[i] += x;
+		i /= 2;
 	}
-	else {
-		//왼쪽구간은 left 개있으니깐
-		//오른쪽구간에서 x-left개 찾기
-		query(no * 2 + 1, mid + 1, e, x - left);
-	}
-	tree[no] = tree[no * 2] + tree[no * 2 + 1];
 
 }
-int main() {
-	ios::sync_with_stdio(false), cin.tie(NULL), cout.tie(0);
-	cin >> n ;
-	int a, b;
+int query(int x) {
+	int i = 1;
+	int le;
+	while (i <= m) {
+		le = tree[i * 2];
+		if (le >= x)
+			i *= 2;
+		else {
+			i=i*2 + 1;
+			x -= le;
+		}
+	}
+	return i - m;
+}
+void input() {
+	cin >> n;
+	m = 1;
+	while (1) {
+		if (m < 2000000)
+			m *= 2;
+		else
+			break;
+	}
+
 	while (n--) {
-		cin >> a >> b;
-		if (a == 1) {
-			upd(1, 1, 2000000, b,1);
+		int cmd, x;
+		cin >> cmd >> x;
+		if (cmd == 1) {
+			upd(x, 1);
 		}
 		else {
-			query(1, 1, 2000000, b);
-			cout<<ret<<"\n";
-//			upd(1, 1, 2000000, ret, -1);
-
+			int re=query(x);
+			cout << re<<"\n";
+			upd(re, -1);
 		}
 	}
 }
+void solve() {
+
+}
+
+int main() {
+	fastio;
+	input();
+}
+
+
+
+
+
