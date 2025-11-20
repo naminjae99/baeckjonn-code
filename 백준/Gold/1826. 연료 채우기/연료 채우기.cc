@@ -33,6 +33,9 @@ int n, m, ret, t, Q, L,k;
 
 struct f {
 	int loc, gas;
+	bool operator<(const f& o)const {
+		return loc < o.loc;
+	}
 };
 bool cmp(f a, f b) {
 	if (a.gas == b.gas)
@@ -40,30 +43,30 @@ bool cmp(f a, f b) {
 	return a.gas > b.gas;
 }
 int hs;
-f heap[1000005];
+int heap[10005];
 
-void push(f x) {
+void push(int x) {
 	int i = hs++;
 	while (i) {
 		int par = (i - 1) / 2;
-		if (!cmp(x,heap[par]))
+		if (heap[par]>=x)
 			break;
 		heap[i] = heap[par];
 		i = par;
 	}
 	heap[i] = x;
 }
-f pop() {
-	f re = heap[0];
+int pop() {
+	int re = heap[0];
 	int i = 0;
 	heap[i] = heap[--hs];
 	while (1) {
 		int le = i * 2 + 1;
 		int ri = i * 2 + 2;
 		int pr = i;
-		if (le < hs&&cmp(heap[le], heap[pr]))
+		if (le < hs&&(heap[le]>heap[pr]))
 			pr = le;
-		if (ri < hs&&cmp(heap[ri], heap[pr]))
+		if (ri < hs&&(heap[ri]> heap[pr]))
 			pr = ri;
 		if (pr == i)
 			break;
@@ -72,42 +75,42 @@ f pop() {
 	}
 	return re;
 }
+
+vector<f> v;
 void input() {
 	cin >> n;
 	for (int i = 0; i < n;i++) {
 		int x, y;
 		cin >> x >> y;
-		push({ x, y });
+		v.push_back({ x,y });
 	}
+	sort(v.begin(), v.end());
 	cin >> m >> k;
 
+	int st = 0;
 
 	while (k<m) {
-		bool flag = 0;
-		vector<f> tmp;
-		while (hs) {
-			f now = pop();
-			//도달 못하는거
-			if (now.loc > k) 
-				tmp.push_back(now);
+	
+
+		//이동가능한 애들 큐에 넣기
+		for (int i = st; i < n; i++) {
+			if (v[i].loc <= k) {
+				push(v[i].gas);
+			}
 			else {
-				n--;
-				ret++;
-				k += now.gas;
-				flag = 1;
+				st = i;
 				break;
 			}
 		}
 
-		if (!flag) {
+		if (hs == 0) {
 			ret = -1;
 			break;
 		}
-		for (auto c : tmp)
-			push(c);
-
-
+		k+= pop();
+		ret++;
 	}
+	
 	cout << ret;
 }
 void solve() {
