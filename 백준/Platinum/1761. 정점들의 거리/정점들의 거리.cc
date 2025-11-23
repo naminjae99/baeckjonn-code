@@ -58,7 +58,7 @@ void input() {
 	
 	dfs(1, 0);
 
-	for(int j=1;j<=19;j++){
+	for(int j=1;j<=18;j++){
 		for (int i = 1; i <= n; i++) {
 			if (par[i][j - 1].first) {
 				par[i][j] = { par[par[i][j - 1].first][j - 1].first,
@@ -78,7 +78,7 @@ void input() {
 			swap(x, y);
 		int dif = dep[x] - dep[y];
 		int dis = 0;
-		for (int i = 19; i >= 0; i--) {
+		for (int i = 18; i >= 0; i--) {
 			if (dif&(1 << i)) {
 				dis += par[x][i].second;
 				x = par[x][i].first;
@@ -90,7 +90,7 @@ void input() {
 			continue;
 		}
 
-		for (int i = 19; i >= 0; i--) {
+		for (int i = 18; i >= 0; i--) {
 			if (par[x][i].first != par[y][i].first) {
 				dis += par[x][i].second+par[y][i].second;
 				x = par[x][i].first;
