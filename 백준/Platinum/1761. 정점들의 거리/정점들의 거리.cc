@@ -2,81 +2,126 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<deque>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
 using namespace std;
+using ll = long long;
 
-const int MAXN = 100005;
-const int MAXLOG = 17;
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
+int n, m, ret, t, k, Q, L;
 
-vector<pair<int, int>> ed[MAXN];
-int n, m;
-int level[MAXN];
-int par[MAXN][MAXLOG + 1];
-int root_dis[MAXN];
+vector<pair<int, int>> ed[40006];
+pair<int,int> par[40005][20];
+int dep[40005];
 
-void dfs(int now, int p, int dis) {
-    level[now] = level[p] + 1;
-    root_dis[now] = dis;
-    par[now][0] = p;
+void dfs(int x, int p) {
+	dep[x] = dep[p] + 1;
+	
 
-    for (auto c : ed[now]) {
-        if (c.first != p) {
-            dfs(c.first, now, dis + c.second);
-        }
-    }
+
+	for (auto c : ed[x]) {
+		if (c.first == p)
+			continue;
+		par[c.first][0] = {x,c.second};
+		dfs(c.first,x);
+	}
 }
+void input() {
+	cin >> n;
+	int x, y, z;
+	for (int i = 0; i < n - 1; i++) {
+		cin >> x >> y >> z;
+		ed[x].push_back({ y,z });
+		ed[y].push_back({ x,z });
+	}
+	
+	dfs(1, 0);
 
-int lca(int u, int v) {
-    if (level[u] < level[v]) swap(u, v);
+	for(int j=1;j<=19;j++){
+		for (int i = 1; i <= n; i++) {
+			if (par[i][j - 1].first) {
+				par[i][j] = { par[par[i][j - 1].first][j - 1].first,
+					par[i][j-1].second+ par[par[i][j - 1].first][j - 1].second };
+			}
+		}
+	}
 
-    for (int i = MAXLOG; i >= 0; i--) {
-        if (level[u] - (1 << i) >= level[v]) {
-            u = par[u][i];
-        }
-    }
 
-    if (u == v) return u;
+	
 
-    for (int i = MAXLOG; i >= 0; i--) {
-        if (par[u][i] != 0 && par[u][i] != par[v][i]) {
-            u = par[u][i];
-            v = par[v][i];
-        }
-    }
 
-    return par[u][0];
+	cin >> m;
+	while (m--) {
+		cin >> x >> y;
+		if (dep[x] < dep[y])
+			swap(x, y);
+		int dif = dep[x] - dep[y];
+		int dis = 0;
+		for (int i = 19; i >= 0; i--) {
+			if (dif&(1 << i)) {
+				dis += par[x][i].second;
+				x = par[x][i].first;
+			}
+		}
+
+		if (x == y) {
+			cout << dis << "\n";
+			continue;
+		}
+
+		for (int i = 19; i >= 0; i--) {
+			if (par[x][i].first != par[y][i].first) {
+				dis += par[x][i].second+par[y][i].second;
+				x = par[x][i].first;
+				y = par[y][i].first;
+			}
+		}
+
+		cout << dis + par[x][0].second + par[y][0].second << "\n";
+
+	}
+
+}
+void solve() {
+
+
+
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-
-    cin >> n;
-
-    for (int i = 0; i < n - 1; i++) {
-        int a, b, c;
-        cin >> a >> b >> c;
-        ed[a].push_back({ b, c });
-        ed[b].push_back({ a, c });
-    }
-
-    dfs(1, 0, 0);
-
-    for (int j = 1; j <= MAXLOG; j++) {
-        for (int i = 1; i <= n; i++) {
-            par[i][j] = par[par[i][j - 1]][j - 1];
-        }
-    }
-
-    cin >> m;
-    while (m--) {
-        int a, b;
-        cin >> a >> b;
-        int ancestor = lca(a, b);
-        cout << root_dis[a] + root_dis[b] - 2 * root_dis[ancestor] << '\n';
-    }
-
-    return 0;
+	fastio;
+	input();
+	solve();
 }
+
+
+
+
+
+
+
+
+
+
+
