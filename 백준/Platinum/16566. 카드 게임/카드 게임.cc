@@ -11,23 +11,33 @@
 #include<algorithm>
 #include<math.h>
 #include<queue>
+#include<deque>
 #include<unordered_set>
 #include<string>
 #include<string.h>
-
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
 using namespace std;
 using ll = long long;
 
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
+int n, m, ret, t, k, Q, L;
 
-int n, m, k,t;
-
-bool chk[4000005];
 
 
+bool vis[4000005];
 int par[4000005];
 
 int find(int x) {
-	if (par[x] < 0)
+	if (par[x] == x)
 		return x;
 	return par[x] = find(par[x]);
 }
@@ -38,30 +48,35 @@ void uni(int a, int b) {
 		return;
 	par[a] = b;
 }
+void init() {
+	cin >> n >> m >> k;
+
+
+	int x;
+	for (int i = 0; i < m; i++) {
+		cin >> x;
+		vis[x] = 1;
+	}
+	for (int i = 1; i <= n; i++) {
+		if (vis[i])
+			par[i] = i;
+		else
+			par[i] = i + 1;
+	}
+
+
+	for (int i = 0; i < k; i++) {
+		cin >> x;
+		x = find(x + 1);
+		cout << x<<"\n";
+		uni(x, x + 1);
+
+	}
+
+
+}
 
 int main() {
-	ios::sync_with_stdio(false), cin.tie(NULL), cout.tie(0);
-	cin >> n >> m >> k;
-	int x;
-
-	for (int i = 1; i <= m; i++) {
-		cin >> x;
-		chk[x]=1;
-	}
-	memset(par, -1, sizeof(par));
-
-	for (int i = 1; i <= k; i++) {
-		cin >> x;
-		
-
-		int mn = find(x + 1);
-		while (!chk[mn]) {
-			uni(mn, mn + 1);
-			mn = mn + 1;
-		}
-
-		cout << mn << "\n";
-		uni(mn, mn+1);
-	}
-	
+	fastio
+		init();
 }
