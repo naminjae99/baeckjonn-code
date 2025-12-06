@@ -48,7 +48,7 @@ void dfs(int x) {
 	b[x] = idx;	
 }
 
-int lg = (1<<19);
+int lg = 1;
 ll penwick[550005];
 
 void upd(int i, ll x) {
@@ -69,6 +69,10 @@ int query(int i) {
 
 void input() {
 	cin >> n >> m;
+
+	while (lg <= n)
+		lg <<= 1;
+
 	cin >> val[1];
 	for (int i = 2; i <= n; i++) {
 		ll x;
@@ -96,7 +100,7 @@ void input() {
 		}
 		else {
 			cin >> x;
-			cout << query(a[x])+val[x] << "\n";
+			cout << query(a[x])+val[x]<< "\n";
 		}
 	}
 }
