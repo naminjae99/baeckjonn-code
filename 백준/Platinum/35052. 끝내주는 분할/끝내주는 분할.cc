@@ -1,73 +1,116 @@
-#include <bits/stdc++.h>
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<deque>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
 using namespace std;
+using ll = long long;
+int dx[4] = { 0,1,0,-1 };
+int dy[4] = { 1,0,-1,0 };
+int n, m, k, Q, ret;
+bool outbound(int x, int y) {
+	return (x <= 0 || x > n || y <= 0 || y > n);
+}
 
-struct FenwickTree {
-    int n;
-    vector<long long> tree;
 
-    FenwickTree(int n) : n(n), tree(n + 1, 0) {}
+int a[300005];
+int b[300005];
+ll ta[300005];
+ll tb[300005];
 
-    void update(int idx, long long delta) {
-        while (idx <= n) {
-            tree[idx] += delta;
-            idx += idx & -idx;
-        }
-    }
+void upda(int i, ll x) {
+	while (i<=n) {
+		ta[i] += x;
+		i += i & -i;
+	}
+}
+void updb(int i,ll x) {
+	while (i <= n) {
+		tb[i] += x;
+		i += i & -i;
+	}
+}
+ll suma(int i) {
+	ll re = 0;
+	while (i > 0) {
+		re += ta[i];
+		i -= i & -i;
+	}
+	return re;
+}
+ll sumb(int i) {
+	ll re = 0;
+	while (i > 0) {
+		re += tb[i];
+		i -= i & -i;
+	}
+	return re;
+}
 
-    long long query(int idx) const {
-        long long ret = 0;
-        while (idx > 0) {
-            ret += tree[idx];
-            idx -= idx & -idx;
-        }
-        return ret;
-    }
-};
+void input() {
+	cin >> n;
+	for (int i = 1; i <= n; i++)
+		cin >> a[i];
+	for (int i = 1; i <= n; i++)
+		cin >> b[i];
 
+
+	int i = 1;
+	while (i <= n) {
+		ret++;
+
+		vector<int> v;
+		int cur = i;
+		while (cur <= n) {
+			
+			ll aa = suma(a[cur]-1);
+			ll bb = sumb(b[cur] - 1);
+
+
+
+			if (aa == bb) {			upda(a[cur], 1);
+			updb( b[cur], 1);
+				v.push_back(cur);
+				cur++;
+			}
+			else
+				break;
+		}
+		for (auto c : v) {
+			upda(a[c], -1);
+			updb(b[c], -1);
+		}
+		i = cur;
+
+	}
+	cout << ret;
+}
+void solve() {
+
+}
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n;
-    cin >> n;
-
-    vector<int> a(n + 1), b(n + 1);
-    for (int i = 1; i <= n; i++) cin >> a[i];
-    for (int i = 1; i <= n; i++) cin >> b[i];
-
-    FenwickTree fenwickA(n), fenwickB(n);
-
-    vector<pair<int, int>> visited;
-    int idx = 1;
-    int answer = 0;
-
-    while (idx <= n) {
-        visited.clear();
-        answer++;
-
-        int idx2 = idx;
-        while (idx2 <= n) {
-            long long partA = (a[idx2] > 1) ? fenwickA.query(a[idx2] - 1) : 0;
-            long long partB = (b[idx2] > 1) ? fenwickB.query(b[idx2] - 1) : 0;
-
-            if (partA != partB) break;
-
-            fenwickA.update(a[idx2], 1);
-            fenwickB.update(b[idx2], 1);
-            visited.emplace_back(a[idx2], b[idx2]);
-
-            idx2++;
-        }
-
-        // rollback
-        for (auto &[x, y] : visited) {
-            fenwickA.update(x, -1);
-            fenwickB.update(y, -1);
-        }
-
-        idx = idx2;
-    }
-
-    cout << answer << '\n';
-    return 0;
+	fastio
+		input();
+	solve();
 }
