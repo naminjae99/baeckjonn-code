@@ -30,7 +30,7 @@ using ll = long long;
 int n;
 int arr[105];
 int vis[105];
-
+int pv;
 set<int> s;
 void input() {
 	cin >> n;
@@ -41,9 +41,10 @@ void input() {
 	for (int i = 1; i <= n; i++) {
 		if (s.find(i) != s.end())
 			continue;
-		memset(vis, 0, sizeof(vis));
+		++pv;
+	
 		queue<int> q;
-		vis[i] = 1;
+		vis[i] = pv;
 		q.push(i);
 
 		set<int> tmp;
@@ -58,14 +59,14 @@ void input() {
 			tmp.insert(cur);
 
 			int nxt = arr[cur];
-			if (vis[nxt]) {
+			if (vis[nxt]==pv) {
 				if (nxt == i)
 					flag = 1;
 				break;
 			}
 			else {
 				q.push(nxt);
-				vis[nxt] = 1;
+				vis[nxt] = pv;
 			}
 		}
 		if (flag) {
