@@ -26,14 +26,8 @@
 #define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
 using namespace std;
 using ll = long long;
-int dx[4] = { 0,1,0,-1 };
-int dy[4] = { 1,0,-1,0 };
-int n, m, k, t, Q, ret;
-bool outbound(int x, int y) {
-	return (x < 0 || x >= n || y < 0 || y >= m);
-}
 
-
+int n;
 int arr[105];
 int vis[105];
 
