@@ -1,0 +1,54 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+int n, m,ret;
+
+vector<string> solution(vector<vector<int>> queries) {
+
+
+	vector<string> answer;
+
+	n = queries.size();
+	for (int i = 0; i < n; i++) {
+		int x = queries[i][0];
+		if (x == 1) {
+			answer.push_back("Rr");
+			continue;
+		}
+		int y = queries[i][1];
+		
+		
+		bool flag = 0;
+
+		while (x > 1) {
+			//해당 x세대에서 버킷 크기
+			int b = 1 << (2 * x - 4);
+
+			if (y <= b) {
+				answer.push_back("RR");
+				flag = 1;
+				break;
+			}
+			if (y > 3 * b) {
+				flag = 1;
+				answer.push_back("rr");
+				break;
+			}
+
+			int gr = (y-1) / b;
+			y -= gr * b;
+			x--;
+		}
+
+		if (flag == 0) {
+			answer.push_back("Rr");
+		}
+	
+		
+	}
+
+
+	
+	return answer;
+}
