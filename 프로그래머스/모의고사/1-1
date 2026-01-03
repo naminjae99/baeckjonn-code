@@ -1,0 +1,42 @@
+#include <string>
+#include <vector>
+#include<algorithm>
+
+using namespace std;
+
+bool vis[26];
+bool v[26];
+
+string solution(string input_string) {
+	
+	string answer = ""; 
+	for (int i = 0; i < input_string.size(); i++) {
+		int x = input_string[i] - 'a';
+
+		if (vis[x]) {
+			if (v[x])
+				continue;
+			v[x] = 1;
+			answer += input_string[i];
+			for (int j = i + 1; j < input_string.size(); j++) {
+				if (input_string[i] == input_string[j])
+					i = j;
+				else
+					break;
+			}
+		}
+		else {
+			vis[x] = 1;
+			for (int j = i + 1; j < input_string.size(); j++) {
+				if (input_string[i] == input_string[j])
+					i = j;
+				else
+					break;
+			}
+		}
+	}
+    	if (answer.size() == 0)
+		return "N";
+	sort(answer.begin(), answer.end());
+	return answer;
+}
