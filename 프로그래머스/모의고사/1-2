@@ -1,0 +1,68 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<deque>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+using namespace std;
+using ll = long long;
+
+int n, m,ret;
+int ord[10];
+int arr[10][10];
+int vis[10];
+
+void dfs(int dep) {
+	if (dep == m) {
+		int sum = 0;
+		for (int i = 0; i < m; i++) 
+			sum += arr[ord[i]][i];
+		
+		ret = max(sum, ret);
+		return;
+	}
+
+	for (int i = 0; i < n; i++){	
+		if (vis[i])
+			continue;
+		ord[dep] = i;
+		vis[i] = 1;
+		dfs(dep + 1);
+		vis[i] = 0;
+	}
+}
+int solution(vector<vector<int>> ability) {
+	n = ability.size();
+	m = ability[0].size();
+
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			arr[i][j] = ability[i][j];
+
+
+
+	dfs(0);
+
+	return ret;
+}
+
