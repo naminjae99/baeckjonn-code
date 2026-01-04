@@ -1,0 +1,93 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<deque>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+using namespace std;
+using ll = long long;
+
+
+
+int n, m,ret;
+
+int heap[1000005];
+int hs;
+void push(int x) {
+	int i = hs++;
+	while (i > 0) {
+		int par = (i - 1) / 2;
+		if (heap[par] <= x)
+			break;
+		heap[i] = heap[par];
+		i = par;
+	}
+	heap[i] = x;
+}
+int pop() {
+	int i = 0;
+	int re = heap[0];
+	heap[0] = heap[--hs];
+
+	while (1) {
+		int le = i * 2 + 1;
+		int ri = i * 2 + 2;
+		int pr = i;
+		if (le < hs&&heap[le] < heap[pr])
+			pr = le;
+		if (ri < hs&&heap[ri] < heap[pr])
+			pr = ri;
+		if (pr == i)
+			break;
+		swap(heap[i], heap[pr]);
+		i = pr;
+	}
+	return re;
+}
+int solution(vector<int> ability, int number) {
+	int answer = 0;
+
+
+	for (auto c : ability) {
+		push(c);
+		answer += c;
+	}
+
+	while (number--){
+		int x = pop();
+		int y = pop();
+
+		answer += (x + y);
+
+		push(x + y);
+		push(x + y);
+	}
+	return answer;
+}
+void input() {
+	
+
+}
+void solve() {
+
+}
