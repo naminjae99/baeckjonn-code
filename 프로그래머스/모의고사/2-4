@@ -1,0 +1,101 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<deque>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+using namespace std;
+using ll = long long;
+
+
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,1,-1 };
+int n, m, ret, k;
+
+int arr[1005][1005];
+
+struct f {
+	int x, y, cnt;
+
+};
+queue<f>q;
+int vis[1005][1005][2];
+
+int solution(int n, int m, vector<vector<int>> hole) {
+	memset(vis, -1, sizeof(vis));
+
+	for (auto c : hole) 
+		arr[c[1]][c[0]] = 1;
+
+	q.push({ 1,1,0 });
+	vis[1][1][0] = 0;
+
+	while (!q.empty()){
+		int x = q.front().x;
+		int y = q.front().y;
+		int cnt = q.front().cnt;
+		q.pop();
+	
+		if (x == m && y == n) {
+			return vis[x][y][cnt];
+		}
+		for (int i = 0; i < 4; i++) {
+			int nx = x + dx[i];
+			int ny = y + dy[i];
+			if (nx<1 || nx>m || ny<1 || ny>n)
+				continue;
+			if (arr[nx][ny])
+				continue;
+		
+			if (vis[nx][ny][cnt] != -1)
+				continue;
+			vis[nx][ny][cnt] = vis[x][y][cnt] + 1;
+			q.push({ nx,ny,cnt });
+		
+		}
+		if (cnt == 0) {
+			for (int i = 0; i < 4; i++) {
+				int nx = x + 2*dx[i];
+				int ny = y + 2*dy[i];
+				if (nx<1 || nx>m || ny<1 || ny>n)
+					continue;
+				if (arr[nx][ny])
+					continue;
+
+				if (vis[nx][ny][1] != -1)
+					continue;
+				vis[nx][ny][1] = vis[x][y][cnt] + 1;
+				q.push({ nx,ny,1 });
+			}
+		}
+
+	}
+
+
+	return -1;
+}
+
+void input() {
+
+	
+}
