@@ -29,37 +29,44 @@ using ll = long long;
 
 
 
-int n, m,ret;
+int n, m, ret;
 
 int arr[500005];
-stack<pair<int, int>>s;
-int re[500005];
+
+
+
+pair<int, int> s[1000005];
+int fr,tp;
+
+
 void input() {
 	cin >> n;
 	for (int i = 0; i < n; i++)
 		cin >> arr[i];
-	
+
 	for (int i = 0; i < n; i++) {
-		if (s.empty()) {
-			s.push({ arr[i],i });
+		if (fr==tp) {
+			s[tp++] = { arr[i],i };
+			cout << 0 << "\n";
 			continue;
 		}
 
-		
-		while (!s.empty()) {
-			if (s.top().first < arr[i])
-				s.pop();
+
+		while (fr != tp) {
+			if (s[tp - 1].first < arr[i])
+				tp--;
 			else
 				break;
 		}
-		if (!s.empty())
-			re[i]=s.top().second+1;
-		
-		s.push({ arr[i],i });
+		if (fr != tp)
+			cout << s[tp - 1].second + 1 << "\n";
+		else
+			cout << 0 << "\n";
+
+		s[tp++]={ arr[i],i };
 
 	}
-	for (int i = 0; i < n; i++)
-		cout << re[i] << " ";
+
 }
 void solve() {
 
@@ -70,6 +77,6 @@ int main() {
 	solve();
 
 
-	
+
 
 }
