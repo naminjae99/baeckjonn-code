@@ -1,0 +1,85 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<deque>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+using namespace std;
+using ll = long long;
+
+
+int dx[8] = { -1,-1,-1,0,0,1,1,1 };
+int dy[8] = { -1,0,1,-1,1,-1,0,1 };
+int n, m, ret, k;
+
+queue<int> q;
+
+int solution(vector<int> menu, vector<int> order, int k) {
+	n = order.size();
+
+	int answer = 1;
+
+	int cur = 0;
+	q.push(0);
+
+	int idx = 1;
+
+
+	while (!q.empty()) {
+		int p = q.front();
+		int o = order[p];
+		int t = menu[o];
+
+		cur += t;
+
+	
+		for (int i = idx; i < n; i++) {
+			if (i*k <cur) {
+				q.push(i);
+				idx++;
+			}
+			else 
+				break;
+			
+		}
+
+		//다 만들기전에 들어온사람
+		answer = max(answer, (int)q.size());
+
+
+		q.pop();
+		
+
+		if (q.empty()&&idx<n) {
+			cur = idx * k;
+			q.push(idx++);
+		}
+		if (idx >= n)
+			break;
+	}
+
+
+
+	return answer;
+}
+
