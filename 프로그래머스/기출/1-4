@@ -1,0 +1,148 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<deque>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+using namespace std;
+using ll = long long;
+
+
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,1,-1 };
+int n, m, ret, k;
+
+int rv[4][4];
+int bv[4][4];
+int arr[4][4];
+
+pair<int, int> rs, re, bs, be;
+
+bool outbound(int x, int y) {
+	return x < 0 || x >= n || y < 0 || y >= m;
+}
+
+void dfs(int x, int y, int xx, int yy, int dep) {
+	if (make_pair(x, y) == re && make_pair(xx, yy) == be) {
+		ret = min(ret, dep);
+		return;
+	}
+
+	//레드는 이미 도착한경우
+	else if (make_pair(x, y) == re) {
+		for (int i = 0; i < 4; i++) {
+			int nxx = xx + dx[i];
+			int nyy = yy + dy[i];
+			if (outbound(nxx, nyy))
+				continue;
+			if (bv[nxx][nyy]||arr[nxx][nyy])
+				continue;
+			if (nxx == x && nyy == y)
+				continue;
+			bv[nxx][nyy] = 1;
+			dfs(x, y, nxx, nyy, dep + 1);
+			bv[nxx][nyy] = 0;
+		}
+	}
+	//블루는 이미 도착한경우
+	else if (make_pair(xx, yy) == be) {
+		for (int i = 0; i < 4; i++) {
+			int nx = x + dx[i];
+			int ny = y + dy[i];
+			if (outbound(nx, ny))
+				continue;
+			if (rv[nx][ny] || arr[nx][ny])
+				continue;
+			if (nx == xx && ny == yy)
+				continue;
+			rv[nx][ny] = 1;
+			dfs(nx, ny, xx, yy, dep + 1);
+			rv[nx][ny] = 0;
+		}
+	}
+	else {
+		for (int i = 0; i < 4; i++) {
+			int nx = x + dx[i];
+			int ny = y + dy[i];
+			if (outbound(nx, ny))
+				continue;
+			if (rv[nx][ny] || arr[nx][ny])
+				continue;
+
+			for (int j = 0; j < 4; j++) {
+				int nxx = xx + dx[j];
+				int nyy = yy + dy[j];
+				if (outbound(nxx, nyy))
+					continue;
+				if (bv[nxx][nyy] || arr[nxx][nyy])
+					continue;
+				//서로 바꾸기 불가능
+				if (x == nxx && y == nyy && nx == xx && ny == yy)
+					continue;
+				if (nx == nxx && ny == nyy)
+					continue;
+				bv[nxx][nyy] = 1;
+				rv[nx][ny] = 1;
+
+				dfs(nx, ny, nxx, nyy, dep + 1);
+
+				rv[nx][ny] = 0;
+				bv[nxx][nyy] = 0;
+			}
+
+		
+		}
+	}
+
+}
+int solution(vector<vector<int>> maze) {
+	n = maze.size(), m = maze[0].size();
+	ret = 1e9;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (maze[i][j] == 1) {
+				rs = { i,j };
+				rv[i][j] = 1;
+			}
+			else if (maze[i][j] == 2) {
+				bs = { i,j };
+				bv[i][j] = 1;
+			}
+			else if (maze[i][j] == 3) {
+				re = { i,j };
+			}
+			else if (maze[i][j] == 4) {
+				be = { i,j };
+			}
+			else if (maze[i][j] == 5)
+				arr[i][j] = 1;
+		}
+	}
+
+	dfs(rs.first, rs.second, bs.first, bs.second, 0);
+
+	if (ret == 1e9)
+		return 0;
+	return ret;
+}
