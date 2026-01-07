@@ -1,0 +1,85 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<deque>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+using namespace std;
+using ll = long long;
+
+
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,1,-1 };
+int n, m, ret, k;
+
+int solution(vector<int> bandage, int health, vector<vector<int>> attacks) {
+	int answer = health;
+	
+	int during = bandage[0];
+	int per = bandage[1];
+	int plus = bandage[2];
+
+	int con = 0;
+	
+	int cur = attacks[0][0]+1;
+	answer -= attacks[0][1];
+
+	if (answer <= 0)
+		return -1;
+
+	
+	for (int i = 1; i < attacks.size();i++) {
+		int t = attacks[i][0];
+		int damage = attacks[i][1];
+
+	//	cout << "마지막 공격시점: " << cur << " " << "피" << answer << "\n";
+		
+		answer += per * (t - cur);
+		answer += ((t - cur) / during) * plus;
+
+		
+		if (answer > health)
+			answer = health;
+	//	cout << "더해져서 :" << answer << "\n";
+
+
+		
+
+		cur = t+1;
+		answer -= damage;
+	//	cout << t << "초에 공격받은후 hp: " << answer << "\n\n";
+
+		if (answer <= 0)
+			return -1;
+	}
+
+
+	return answer;
+}
+void input() {
+
+	
+}
+void solve() {
+
+}
