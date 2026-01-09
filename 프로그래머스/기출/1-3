@@ -1,0 +1,81 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdio.h>
+#include<iostream>
+#include<unordered_map>
+#include<set>
+#include<vector>
+#include<memory.h>
+#include<algorithm>
+#include<math.h>
+#include<queue>
+#include<deque>
+#include<unordered_set>
+#include<string>
+#include<string.h>
+#include<stack>
+#include<sstream>
+#include<iomanip>
+#include<deque>
+#include<array>
+#include<limits.h>
+#include<cfloat>
+#include<map>
+#define fastio ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+using namespace std;
+using ll = long long;
+
+
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,1,-1 };
+int n, m, ret, k;
+
+
+int solution(int h1, int m1, int s1,
+	int h2, int m2, int s2) {
+
+	int answer = 0;
+
+	// 시작 / 종료 시간을 초 단위로 변환
+	int startTime = h1 * 3600 + m1 * 60 + s1;
+	int endTime = h2 * 3600 + m2 * 60 + s2;
+
+	// 시작 시간이 00:00:00 또는 12:00:00 인 경우 미리 카운트
+	if (startTime == 0 || startTime == 12 * 3600)
+		answer++;
+
+	while (startTime < endTime) {
+		// 현재 각도
+		double hCurAngle = fmod(startTime / 120.0, 360.0);
+		double mCurAngle = fmod(startTime / 10.0, 360.0);
+		double sCurAngle = fmod(startTime * 6.0, 360.0);
+
+		// 다음 각도 (0도 → 360도 보정)
+		double hNextAngle = fmod((startTime + 1) / 120.0, 360.0);
+		double mNextAngle = fmod((startTime + 1) / 10.0, 360.0);
+		double sNextAngle = fmod((startTime + 1) * 6.0, 360.0);
+
+		if (hNextAngle == 0) hNextAngle = 360;
+		if (mNextAngle == 0) mNextAngle = 360;
+		if (sNextAngle == 0) sNextAngle = 360;
+
+		// 초침 - 시침
+		if (sCurAngle < hCurAngle && sNextAngle >= hNextAngle)
+			answer++;
+
+		// 초침 - 분침
+		if (sCurAngle < mCurAngle && sNextAngle >= mNextAngle)
+			answer++;
+
+		// 시침·분침·초침 동시 겹침 중복 제거
+		if (sNextAngle == hNextAngle && hNextAngle == mNextAngle)
+			answer--;
+
+		startTime++;
+	}
+
+	return answer;
+}
+
