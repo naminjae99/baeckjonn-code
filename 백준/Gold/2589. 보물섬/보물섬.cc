@@ -41,7 +41,7 @@ struct f {
 void bfs(int a, int b) {
 	++pv;
 	queue<f>qq;
-	qq.push({a,b,0 });
+	qq.push({ a,b,0 });
 	vis[a][b] = pv;
 
 	while (!qq.empty()) {
@@ -49,16 +49,16 @@ void bfs(int a, int b) {
 		int y = qq.front().y;
 		int z = qq.front().z;
 		qq.pop();
-		
+
 		ret = max(ret, z);
 		for (int i = 0; i < 4; i++) {
 			int nx = x + dx[i];
 			int ny = y + dy[i];
 			if (nx < 0 || ny < 0 || nx >= n || ny >= m)
 				continue;
-			if (vis[nx][ny]==pv || arr[nx][ny])
+			if (vis[nx][ny] == pv || arr[nx][ny])
 				continue;
-			qq.push({ nx,ny,z+1 });
+			qq.push({ nx,ny,z + 1 });
 			vis[nx][ny] = pv;
 		}
 	}
@@ -66,14 +66,14 @@ void bfs(int a, int b) {
 
 }
 void input() {
-	cin >> n>>m;
+	cin >> n >> m;
 	for (int i = 0; i < n; i++) {
 		string s;
 		cin >> s;
 		for (int j = 0; j < m; j++) {
 			if (s[j] == 'W')
 				arr[i][j] = 1;
-			
+
 		}
 	}
 
@@ -81,6 +81,12 @@ void input() {
 		for (int j = 0; j < m; j++) {
 			if (arr[i][j])
 				continue;
+
+			if (i>0&&i<n-1&& arr[i - 1][j] == 0 && arr[i + 1][j] == 0)
+				continue;
+			if (j > 0 && j < m - 1 && arr[i][j - 1] == 0 && arr[i][j + 1] == 0)
+				continue;
+
 			bfs(i, j);
 		}
 	}
