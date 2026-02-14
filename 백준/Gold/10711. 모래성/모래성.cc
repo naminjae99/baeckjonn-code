@@ -33,58 +33,37 @@ int dy[8] = { 0,0,-1,1,-1,1,-1,1 };
 
 int n,m, ret, t, k;
 int arr[1005][1005];
-queue<int> q,qq;
-int tmp[1005][1005];
-int vis[1005][1005];
-int pv;
+queue<int> q;
 
 void bfs() {
 	
 	
-
 	while (!q.empty()) {
-		int x = q.front() / n;
-		int y = q.front() % n;
-		q.pop();
-		arr[x][y] = 0;
-		for (int z = 0; z < 8; z++) {
-			int nx = x + dx[z];
-			int ny = y + dy[z];
-			if (nx < 0 || nx >= n || ny < 0 || ny >= m)
-				continue;
-			if (arr[nx][ny] == 0 || arr[nx][ny] == 9)
-				continue;
-			tmp[nx][ny]++;
-		}
-	}	
-	
-	++pv;
+		ret++;
+		int qs = q.size();
+		while (qs--) {
+			int x = q.front() / n;
+			int y = q.front() % n;
+			q.pop();
 
-	int qs = qq.size();
-	while (qs--) {
-		int x = qq.front() / n;
-		int y = qq.front() % n;
-		qq.pop();
+			for (int z = 0; z < 8; z++) {
+				int nx = x + dx[z];
+				int ny = y + dy[z];
+				if (nx < 0 || nx >= n || ny < 0 || ny >= m)
+					continue;
+				if (arr[nx][ny] <=0)
+					continue;
 
-		//삭제된거 주위로 확인
-		int cnt = 0;
-		for (int z = 0; z < 8; z++) {
-			int nx = x + dx[z];
-			int ny = y + dy[z];
-			if (nx < 0 || nx >= n || ny < 0 || ny >= m)
-				continue;
-			if (arr[nx][ny] == 0 || arr[nx][ny] == 9||vis[nx][ny]==pv)
-				continue;
-			if (tmp[nx][ny] >= arr[nx][ny]) {
-				vis[nx][ny] = pv;
-				q.push(nx*n + ny);
-				qq.push(nx*n + ny);
+				if (--arr[nx][ny] <= 0) {
+					arr[nx][ny] = -1;
+					q.push(nx*n + ny);
+				}
+
 			}
-			
 		}
-		
-	}
 
+	}
+	
 
 
 }
@@ -96,48 +75,19 @@ void input() {
 		cin >> s;
 		for (int j = 0; j < m; j++) {
 			if (s[j] != '.')
-				arr[i][j] = s[j]-'0';
-		}
-	}
-
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
-			if (arr[i][j] == 0 || arr[i][j] == 9)
-				continue;
-
-			int cnt = 0;
-			for (int z = 0; z < 8; z++) {
-				int nx = i + dx[z];
-				int ny = j + dy[z];
-				if (nx < 0 || nx >= n || ny < 0 || ny >= m)
-					continue;
-				if (arr[nx][ny] == 0)
-					cnt++;
-			}
-			tmp[i][j] = cnt;
-			if (cnt >= arr[i][j]) {
+				arr[i][j] = s[j] - '0';
+			else {
 				q.push(i*n + j);
-				qq.push(i*n + j);
+				arr[i][j] = -1;
 			}
 		}
 	}
 
+	bfs();
+	
 
 
-
-
-	while (1) {
-		if (!q.empty()) {
-			ret++;
-			bfs();
-		}
-		else
-			break;
-	}
-
-
-
-	cout << ret;
+	cout << ret-1;
 }
 
 
