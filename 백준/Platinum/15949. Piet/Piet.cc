@@ -145,10 +145,7 @@ void input() {
 					int ny = my + dy[dp];
 					if (out(nx, ny) || arr[nx][ny] == 'X') {
 						if (j == 0) {
-							if (cc == 1)
-								cc = 0;
-							else
-								cc = 1;
+							cc = !cc;
 						}
 							
 						else
@@ -180,10 +177,7 @@ void input() {
 					int ny = my + dy[dp];
 					if (out(nx, ny) || arr[nx][ny] == 'X') {
 						if (j == 0) {
-							if (cc == 1)
-								cc = 0;
-							else
-								cc = 1;
+							cc = !cc;
 						}
 						else
 							dp = (dp + 1) % 4;
@@ -214,10 +208,7 @@ void input() {
 					int ny = my + dy[dp];
 					if (out(nx, ny) || arr[nx][ny] == 'X') {
 						if (j == 0) {
-							if (cc == 1)
-								cc = 0;
-							else
-								cc = 1;
+							cc = !cc;
 						}
 						else
 							dp = (dp + 1) % 4;
@@ -248,10 +239,7 @@ void input() {
 					int ny = my + dy[dp];
 					if (out(nx, ny) || arr[nx][ny] == 'X') {
 						if (j == 0) {
-							if (cc == 1)
-								cc = 0;
-							else
-								cc = 1;
+							cc = !cc;
 						}
 						else
 							dp = (dp + 1) % 4;
